@@ -1,0 +1,4474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#10110f">
+<!-- PWA Configuration -->
+<link rel="manifest" href="./manifest.json">
+
+<meta name="theme-color" content="#10110f">
+
+<meta
+  name="description"
+  content="Market Link — Your World. One Marketplace. Discover products, connect with sellers, and shop with ease."
+>
+
+<!-- App Icons -->
+<link rel="icon" type="image/png" href="./icons/icon-192.png">
+
+<link
+  rel="apple-touch-icon"
+  href="./icons/icon-192.png"
+>
+<title>Market Link — Your World. One Marketplace.</title>
+
+<style>
+/* =========================================================
+   MARKET LINK — PREMIUM MARKETPLACE
+   Single-file HTML, CSS and JavaScript
+   ========================================================= */
+
+:root {
+  --bg: #f7f7f4;
+  --surface: #ffffff;
+  --surface-2: #f0f0eb;
+  --text: #191a17;
+  --muted: #77786f;
+  --line: #e8e8e1;
+  --accent: #b8f35b;
+  --accent-dark: #7da92f;
+  --dark: #141611;
+  --danger: #dc4545;
+  --success: #18865a;
+  --shadow: 0 12px 40px rgba(20, 22, 17, .06);
+  --radius: 22px;
+  --sidebar-width: 248px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-x: hidden;
+  transition: background .25s, color .25s;
+}
+
+body.dark {
+  --bg: #11120f;
+  --surface: #191a16;
+  --surface-2: #24251f;
+  --text: #f2f3eb;
+  --muted: #a0a196;
+  --line: #303129;
+  --shadow: 0 12px 40px rgba(0, 0, 0, .2);
+}
+
+button, input, textarea, select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--accent-dark);
+  outline-offset: 3px;
+}
+
+button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+}
+
+svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 12px;
+}
+
+.eyebrow {
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent-dark);
+}
+
+.btn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 10px 17px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 750;
+  transition: transform .2s, background .2s, border-color .2s;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  background: var(--dark);
+  color: white;
+  border-color: var(--dark);
+}
+
+body.dark .btn-primary {
+  background: var(--accent);
+  color: #15170f;
+  border-color: var(--accent);
+}
+
+.btn-accent {
+  background: var(--accent);
+  color: #17190f;
+  border-color: var(--accent);
+}
+
+.btn-danger {
+  color: var(--danger);
+}
+
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--surface);
+  color: var(--text);
+  position: relative;
+}
+
+.icon-btn:hover {
+  background: var(--surface-2);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 5px;
+  border-radius: 7px;
+  background: var(--accent);
+  color: #16190f;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 99px;
+  padding: 6px 10px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.pill.available {
+  color: var(--success);
+}
+
+.pill.out {
+  color: var(--danger);
+}
+
+/* BRAND */
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+.brand-mark {
+  width: 43px;
+  height: 43px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: #15170f;
+  border-radius: 14px;
+  font-size: 22px;
+  font-weight: 1000;
+  letter-spacing: -2px;
+  box-shadow: 0 5px 18px rgba(184, 243, 91, .2);
+}
+
+.brand-copy strong {
+  display: block;
+  font-size: 17px;
+  letter-spacing: -.7px;
+  line-height: 1.2;
+}
+
+.brand-copy span {
+  display: block;
+  margin-top: 3px;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: .7px;
+}
+
+/* APP SHELL */
+
+.app {
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 50;
+  width: var(--sidebar-width);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 17px 16px;
+  background: var(--surface);
+  border-right: 1px solid var(--line);
+  overflow-y: auto;
+  transition: transform .25s;
+}
+
+.sidebar-brand {
+  padding: 0 7px 28px;
+}
+
+.nav-label {
+  padding: 13px 11px 8px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+}
+
+.nav-list {
+  display: grid;
+  gap: 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--muted);
+  text-align: left;
+  font-weight: 650;
+  transition: .2s;
+}
+
+.nav-item svg {
+  width: 18px;
+  height: 18px;
+}
+
+.nav-item:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.nav-item.active {
+  background: var(--dark);
+  color: #fff;
+}
+
+body.dark .nav-item.active {
+  background: var(--accent);
+  color: #17190f;
+}
+
+.nav-item .badge {
+  margin-left: auto;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+  padding-top: 25px;
+}
+
+.seller-promo {
+  padding: 16px;
+  margin-bottom: 17px;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: linear-gradient(140deg, var(--surface-2), var(--surface));
+}
+
+.seller-promo .promo-symbol {
+  width: 37px;
+  height: 37px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  background: var(--accent);
+  color: #15170f;
+  font-size: 20px;
+}
+
+.seller-promo strong {
+  display: block;
+  font-size: 13px;
+}
+
+.seller-promo p {
+  margin: 5px 0 13px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.seller-promo .btn {
+  width: 100%;
+  min-height: 37px;
+  font-size: 12px;
+}
+
+.sidebar-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 6px 0;
+  border-top: 1px solid var(--line);
+}
+
+.sidebar-foot span {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+/* MAIN AREA */
+
+.main {
+  margin-left: var(--sidebar-width);
+  min-width: 0;
+  min-height: 100vh;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  min-height: 80px;
+  padding: 15px 30px;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg) 91%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+.mobile-brand {
+  display: none;
+}
+
+.global-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: min(440px, 48%);
+  min-height: 45px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--surface);
+}
+
+.global-search svg {
+  color: var(--muted);
+}
+
+.global-search input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+}
+
+.global-search input::placeholder {
+  color: var(--muted);
+}
+
+.topbar-spacer {
+  flex: 1;
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-trigger {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  padding: 4px 7px 4px 4px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--text);
+  text-align: left;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 11px;
+  background: var(--accent);
+  color: #17190f;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-trigger-copy {
+  max-width: 120px;
+}
+
+.user-trigger-copy strong,
+.user-trigger-copy small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-trigger-copy strong {
+  font-size: 11px;
+}
+
+.user-trigger-copy small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+/* PAGE */
+
+.page {
+  display: none;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 28px 30px 70px;
+  animation: pageIn .32s ease both;
+}
+
+.page.active {
+  display: block;
+}
+
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.page-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 25px;
+}
+
+.page-heading h1 {
+  margin-top: 5px;
+  font-size: clamp(25px, 3vw, 36px);
+  letter-spacing: -1.6px;
+  line-height: 1.15;
+}
+
+.page-heading p {
+  margin-top: 7px;
+  color: var(--muted);
+  max-width: 560px;
+}
+
+/* HERO */
+
+.hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.2fr .8fr;
+  gap: 20px;
+  min-height: 330px;
+  margin-bottom: 23px;
+  overflow: hidden;
+  border-radius: 26px;
+  background: var(--dark);
+  color: #fff;
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 2;
+  align-self: center;
+  padding: clamp(25px, 4vw, 52px);
+}
+
+.hero-copy .eyebrow {
+  color: var(--accent);
+}
+
+.hero-copy h1 {
+  max-width: 610px;
+  margin: 14px 0 15px;
+  font-size: clamp(35px, 5vw, 62px);
+  font-weight: 850;
+  letter-spacing: -3.2px;
+  line-height: .99;
+}
+
+.hero-copy h1 em {
+  color: var(--accent);
+  font-style: normal;
+}
+
+.hero-copy p {
+  max-width: 445px;
+  color: #b6b8ae;
+  line-height: 1.8;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.hero-art {
+  position: relative;
+  min-height: 290px;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 70% 30%, rgba(184, 243, 91, .22), transparent 45%),
+    radial-gradient(ellipse at 20% 90%, rgba(184, 243, 91, .11), transparent 40%);
+}
+
+.hero-art::before {
+  content: "";
+  position: absolute;
+  width: 250px;
+  height: 250px;
+  right: 45px;
+  top: 28px;
+  border: 1px solid rgba(184, 243, 91, .38);
+  border-radius: 48% 52% 40% 60%;
+  transform: rotate(-28deg);
+  animation: floatShape 9s ease-in-out infinite;
+}
+
+.hero-art::after {
+  content: "";
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  right: 82px;
+  top: 62px;
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 50%;
+  animation: floatShape 12s ease-in-out infinite reverse;
+}
+
+@keyframes floatShape {
+  0%,100% { transform: translateY(0) rotate(-28deg); }
+  50% { transform: translateY(-14px) rotate(-12deg); }
+}
+
+.hero-product {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 118px;
+  height: 142px;
+  border: 1px solid rgba(255,255,255,.19);
+  border-radius: 21px;
+  background: linear-gradient(145deg, #31362a, #1d2019);
+  box-shadow: 0 24px 60px rgba(0,0,0,.3);
+  font-size: 50px;
+  animation: productFloat 5s ease-in-out infinite;
+}
+
+.hero-product.one {
+  right: 47%;
+  top: 62px;
+  transform: rotate(-12deg);
+}
+
+.hero-product.two {
+  right: 15%;
+  top: 112px;
+  width: 105px;
+  height: 125px;
+  font-size: 44px;
+  animation-delay: -2s;
+}
+
+@keyframes productFloat {
+  0%,100% { translate: 0 0; }
+  50% { translate: 0 -12px; }
+}
+
+.hero-sticker {
+  position: absolute;
+  right: 13%;
+  bottom: 28px;
+  z-index: 4;
+  padding: 11px 15px;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 12px;
+  background: #fff;
+  color: #191a17;
+  font-size: 11px;
+  font-weight: 850;
+  box-shadow: 0 10px 35px rgba(0,0,0,.25);
+}
+
+/* STATS */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 13px;
+  margin-bottom: 34px;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+}
+
+.stat-icon {
+  width: 43px;
+  height: 43px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 13px;
+  background: var(--surface-2);
+}
+
+.stat-card span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.stat-card strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 23px;
+  letter-spacing: -.8px;
+}
+
+/* SECTION */
+
+.section {
+  margin-top: 34px;
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 14px;
+  margin-bottom: 17px;
+}
+
+.section-heading h2 {
+  margin-top: 4px;
+  font-size: 22px;
+  letter-spacing: -.8px;
+}
+
+.section-heading p {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.text-btn {
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* CATEGORY GRID */
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.category-card {
+  min-width: 0;
+  min-height: 115px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: var(--surface);
+  color: var(--text);
+  text-align: left;
+  transition: transform .22s, border-color .22s, background .22s;
+}
+
+.category-card:hover,
+.category-card.selected {
+  transform: translateY(-3px);
+  border-color: var(--accent-dark);
+  background: color-mix(in srgb, var(--accent) 13%, var(--surface));
+}
+
+.category-icon {
+  font-size: 25px;
+}
+
+.category-card strong {
+  font-size: 12px;
+}
+
+/* PRODUCT GRID */
+
+.product-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 13px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.filter-row {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  padding: 8px 13px;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.filter-chip.active {
+  background: var(--dark);
+  border-color: var(--dark);
+  color: #fff;
+}
+
+body.dark .filter-chip.active {
+  background: var(--accent);
+  color: #17190f;
+  border-color: var(--accent);
+}
+
+.select {
+  min-height: 39px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 17px;
+}
+
+.product-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 19px;
+  background: var(--surface);
+  transition: transform .22s, box-shadow .22s;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+}
+
+.product-visual {
+  position: relative;
+  height: 210px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--surface-2);
+  cursor: pointer;
+}
+
+.product-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .45s;
+}
+
+.product-card:hover .product-visual img {
+  transform: scale(1.045);
+}
+
+.product-emoji {
+  font-size: 65px;
+  filter: drop-shadow(0 15px 15px rgba(0,0,0,.1));
+  transition: transform .35s;
+}
+
+.product-card:hover .product-emoji {
+  transform: scale(1.08) rotate(-3deg);
+}
+
+.product-tag {
+  position: absolute;
+  top: 11px;
+  left: 11px;
+  z-index: 2;
+  padding: 6px 9px;
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 9px;
+  font-weight: 850;
+}
+
+.product-fav {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  width: 35px;
+  height: 35px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(0,0,0,.05);
+  border-radius: 11px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.product-fav.saved {
+  color: #df536b;
+}
+
+.product-fav.saved svg {
+  fill: currentColor;
+}
+
+.product-info {
+  padding: 15px;
+}
+
+.product-category {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.product-info h3 {
+  min-height: 42px;
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.45;
+  letter-spacing: -.2px;
+  cursor: pointer;
+}
+
+.product-price-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 9px;
+}
+
+.product-price {
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: -.6px;
+}
+
+.product-old-price {
+  color: var(--muted);
+  font-size: 11px;
+  text-decoration: line-through;
+}
+
+.product-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.product-actions {
+  display: grid;
+  grid-template-columns: 1fr 42px;
+  gap: 7px;
+  margin-top: 13px;
+}
+
+.product-actions .btn {
+  min-height: 39px;
+  padding: 8px;
+  font-size: 11px;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  padding: 50px 20px;
+  border: 1px dashed var(--line);
+  border-radius: 18px;
+  text-align: center;
+}
+
+.empty-state .empty-icon {
+  font-size: 37px;
+  margin-bottom: 12px;
+}
+
+.empty-state h3 {
+  margin-bottom: 6px;
+}
+
+.empty-state p {
+  color: var(--muted);
+  margin-bottom: 17px;
+}
+
+/* WIDE PROMO */
+
+.promo-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 27px;
+  border-radius: 21px;
+  background: var(--accent);
+  color: #17190f;
+}
+
+.promo-banner h2 {
+  font-size: clamp(22px, 3vw, 31px);
+  letter-spacing: -1px;
+}
+
+.promo-banner p {
+  margin-top: 6px;
+  max-width: 480px;
+  color: #3c482e;
+}
+
+/* TABLES */
+
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: var(--surface);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+  text-align: left;
+}
+
+th, td {
+  padding: 15px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+th {
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+}
+
+td {
+  font-size: 12px;
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.table-product {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 170px;
+}
+
+.table-product-image {
+  width: 43px;
+  height: 43px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 11px;
+  background: var(--surface-2);
+  font-size: 22px;
+}
+
+.table-product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.table-product strong {
+  display: block;
+  max-width: 190px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status {
+  display: inline-flex;
+  padding: 5px 9px;
+  border-radius: 99px;
+  background: var(--surface-2);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.status.done {
+  color: var(--success);
+}
+
+.status.pending {
+  color: #a77a19;
+}
+
+.status.cancelled {
+  color: var(--danger);
+}
+
+/* DASHBOARD CHART */
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(260px, .8fr);
+  gap: 17px;
+}
+
+.panel {
+  min-width: 0;
+  padding: 21px;
+  border: 1px solid var(--line);
+  border-radius: 19px;
+  background: var(--surface);
+}
+
+.panel h3 {
+  font-size: 15px;
+}
+
+.panel-subtitle {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.chart {
+  height: 190px;
+  display: flex;
+  align-items: flex-end;
+  gap: 13px;
+  padding-top: 20px;
+}
+
+.chart-column {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
+
+.chart-bar {
+  width: min(100%, 36px);
+  min-height: 4px;
+  border-radius: 7px 7px 3px 3px;
+  background: var(--accent);
+  transition: height .4s;
+}
+
+.chart-column span {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+/* FORMS */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.field {
+  min-width: 0;
+}
+
+.field.full {
+  grid-column: 1 / -1;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.field textarea {
+  min-height: 105px;
+  resize: vertical;
+}
+
+.field small {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.file-drop {
+  position: relative;
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  min-height: 130px;
+  padding: 20px;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  background: var(--surface-2);
+  text-align: center;
+}
+
+.file-drop input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.file-drop strong {
+  font-size: 12px;
+}
+
+.file-drop span {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+/* CART */
+
+.cart-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(260px, .7fr);
+  align-items: start;
+  gap: 20px;
+}
+
+.cart-items {
+  display: grid;
+  gap: 12px;
+}
+
+.cart-item {
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 15px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: var(--surface);
+}
+
+.cart-image {
+  width: 90px;
+  height: 90px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--surface-2);
+  font-size: 34px;
+}
+
+.cart-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cart-item h3 {
+  font-size: 13px;
+}
+
+.cart-item p {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.qty-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.qty-control button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.cart-summary {
+  padding: 21px;
+  border: 1px solid var(--line);
+  border-radius: 19px;
+  background: var(--surface);
+  position: sticky;
+  top: 100px;
+}
+
+.cart-summary h3 {
+  margin-bottom: 17px;
+  font-size: 17px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 13px 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.summary-total {
+  padding-top: 15px;
+  margin-top: 15px;
+  border-top: 1px solid var(--line);
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.cart-summary .btn {
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* PROFILE */
+
+.profile-layout {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 19px;
+  align-items: start;
+}
+
+.profile-card {
+  padding: 25px;
+  border: 1px solid var(--line);
+  border-radius: 19px;
+  background: var(--surface);
+  text-align: center;
+}
+
+.profile-picture {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 15px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 28px;
+  background: var(--accent);
+  color: #17190f;
+  font-size: 30px;
+  font-weight: 900;
+}
+
+.profile-picture img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-card h3 {
+  font-size: 18px;
+}
+
+.profile-card p {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.profile-picture-actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.profile-picture-actions .btn {
+  min-height: 35px;
+  font-size: 11px;
+}
+
+.settings-stack {
+  display: grid;
+  gap: 16px;
+}
+
+.settings-card {
+  padding: 23px;
+  border: 1px solid var(--line);
+  border-radius: 19px;
+  background: var(--surface);
+}
+
+.settings-card h3 {
+  margin-bottom: 5px;
+  font-size: 16px;
+}
+
+.settings-card > p {
+  margin-bottom: 18px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.attachment-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.attachment-row:last-child {
+  border-bottom: 0;
+}
+
+.attachment-row strong {
+  display: block;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.attachment-row small {
+  display: block;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* MODALS */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(10, 11, 9, .66);
+  backdrop-filter: blur(7px);
+}
+
+.modal-backdrop.open {
+  display: flex;
+  animation: fadeIn .2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  width: min(760px, 100%);
+  max-height: min(90vh, 900px);
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: 23px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 30px 100px rgba(0,0,0,.28);
+  animation: modalIn .25s ease;
+}
+
+.modal.small-modal {
+  width: min(500px, 100%);
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(12px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-head {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 20px 23px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.modal-head h2 {
+  font-size: 19px;
+  letter-spacing: -.6px;
+}
+
+.modal-body {
+  padding: 23px;
+}
+
+.product-detail-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+}
+
+.detail-image {
+  min-height: 300px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 17px;
+  background: var(--surface-2);
+  font-size: 100px;
+}
+
+.detail-image img {
+  width: 100%;
+  height: 100%;
+  max-height: 410px;
+  object-fit: cover;
+}
+
+.detail-info h2 {
+  margin: 10px 0;
+  font-size: 26px;
+  line-height: 1.2;
+  letter-spacing: -1px;
+}
+
+.detail-price {
+  margin: 15px 0;
+  font-size: 28px;
+  font-weight: 950;
+  letter-spacing: -1px;
+}
+
+.detail-info p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+.detail-actions {
+  display: grid;
+  gap: 9px;
+  margin-top: 20px;
+}
+
+.detail-actions .btn {
+  width: 100%;
+}
+
+/* NOTIFICATIONS */
+
+.notification-list {
+  display: grid;
+  gap: 10px;
+}
+
+.notification-item {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--surface);
+}
+
+.notification-icon {
+  width: 37px;
+  height: 37px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 11px;
+  background: var(--surface-2);
+}
+
+.notification-item strong {
+  display: block;
+  font-size: 12px;
+}
+
+.notification-item p {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+/* FLOATING MESSAGING */
+
+.message-float {
+  position: fixed;
+  z-index: 150;
+  right: 22px;
+  bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 17px;
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: 12px;
+  background: #126b45;
+  color: #fff;
+  box-shadow: 0 12px 35px rgba(0,0,0,.22);
+  transition: transform .2s, box-shadow .2s;
+}
+
+.message-float:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0,0,0,.3);
+}
+
+.message-float-icon {
+  width: 27px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: rgba(255,255,255,.15);
+  font-size: 18px;
+}
+
+.message-float strong {
+  display: block;
+  font-size: 12px;
+}
+
+.message-float small {
+  display: block;
+  margin-top: 1px;
+  color: #d6f5e3;
+  font-size: 10px;
+}
+
+.message-panel {
+  position: fixed;
+  z-index: 149;
+  right: 22px;
+  bottom: 88px;
+  width: min(365px, calc(100vw - 24px));
+  padding: 21px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 20px 65px rgba(0,0,0,.23);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+  transition: .2s ease;
+}
+
+.message-panel.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.message-panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.message-panel-head h3 {
+  font-size: 18px;
+}
+
+.message-panel-head p {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.message-panel label {
+  display: block;
+  margin: 12px 0 6px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.message-panel input,
+.message-panel textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--surface-2);
+  color: var(--text);
+  outline: 0;
+}
+
+.message-panel textarea {
+  min-height: 105px;
+  resize: vertical;
+}
+
+.message-panel .btn {
+  width: 100%;
+  margin-top: 12px;
+  background: #168a58;
+  color: white;
+  border-color: #168a58;
+}
+
+.message-panel .small {
+  display: block;
+  margin-top: 10px;
+  line-height: 1.7;
+}
+
+/* TOAST */
+
+.toast-stack {
+  position: fixed;
+  z-index: 500;
+  top: 95px;
+  right: 20px;
+  display: grid;
+  gap: 9px;
+  width: min(340px, calc(100vw - 30px));
+  pointer-events: none;
+}
+
+.toast {
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  font-size: 12px;
+  animation: toastIn .25s ease;
+}
+
+.toast.error {
+  border-left: 4px solid var(--danger);
+}
+
+.toast.success {
+  border-left: 4px solid var(--success);
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* AUTH SCREEN */
+
+.auth-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+  background: #11120f;
+  color: white;
+}
+
+.auth-screen.open {
+  display: flex;
+}
+
+.auth-shell {
+  width: min(1040px, 100%);
+  min-height: 570px;
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 25px;
+  background: #191a16;
+}
+
+.auth-story {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(24px, 5vw, 48px);
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 80% 20%, rgba(184,243,91,.15), transparent 40%),
+    #151611;
+}
+
+.auth-story h1 {
+  max-width: 500px;
+  margin-top: 40px;
+  font-size: clamp(37px, 5vw, 61px);
+  line-height: .98;
+  letter-spacing: -3px;
+}
+
+.auth-story h1 em {
+  color: var(--accent);
+  font-style: normal;
+}
+
+.auth-story p {
+  max-width: 380px;
+  margin-top: 19px;
+  color: #b4b7ab;
+  line-height: 1.9;
+}
+
+.auth-story-bottom {
+  color: #777b6e;
+  font-size: 11px;
+}
+
+.auth-form-side {
+  padding: clamp(22px, 4vw, 38px);
+  background: #1b1c18;
+}
+
+.auth-form-side h2 {
+  margin-top: 22px;
+  font-size: 26px;
+  letter-spacing: -.9px;
+}
+
+.auth-form-side > p {
+  margin-top: 7px;
+  color: #a6a99d;
+  font-size: 12px;
+}
+
+.auth-role-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.auth-role {
+  padding: 14px;
+  border: 1px solid #393b32;
+  border-radius: 14px;
+  background: #22231e;
+  color: white;
+  text-align: left;
+}
+
+.auth-role.selected {
+  border-color: var(--accent);
+  background: rgba(184,243,91,.1);
+}
+
+.auth-role .role-icon {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 24px;
+}
+
+.auth-role strong {
+  display: block;
+  font-size: 12px;
+}
+
+.auth-role small {
+  display: block;
+  margin-top: 4px;
+  color: #a6a99d;
+  font-size: 10px;
+}
+
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  margin-top: 18px;
+  border-radius: 12px;
+  background: #11120f;
+}
+
+.auth-tabs button {
+  padding: 10px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #9ea093;
+  font-weight: 750;
+}
+
+.auth-tabs button.active {
+  background: #292a24;
+  color: white;
+}
+
+.auth-fields {
+  display: grid;
+  gap: 11px;
+  margin-top: 17px;
+}
+
+.auth-fields label {
+  display: block;
+  margin-bottom: 6px;
+  color: #d4d6cc;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.auth-fields input {
+  width: 100%;
+  min-height: 43px;
+  padding: 11px;
+  border: 1px solid #36382f;
+  border-radius: 10px;
+  outline: 0;
+  background: #11120f;
+  color: white;
+}
+
+.auth-fields input:focus {
+  border-color: var(--accent);
+}
+
+.auth-submit {
+  width: 100%;
+  margin-top: 16px;
+  min-height: 46px;
+}
+
+.auth-disclaimer {
+  margin-top: 13px;
+  padding: 12px;
+  border: 1px solid #33352c;
+  border-radius: 11px;
+  background: #22231e;
+  color: #a9ac9f;
+  font-size: 10px;
+  line-height: 1.7;
+}
+
+/* MOBILE NAV */
+
+.mobile-bottom-nav {
+  display: none;
+}
+
+.mobile-menu-btn {
+  display: none;
+}
+
+@media (min-width: 1500px) {
+  .product-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1200px) {
+  :root { --sidebar-width: 220px; }
+  .page { padding-left: 23px; padding-right: 23px; }
+  .topbar { padding-left: 23px; padding-right: 23px; }
+  .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .category-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .hero { grid-template-columns: 1.15fr .85fr; }
+}
+
+@media (max-width: 900px) {
+  :root { --sidebar-width: 0px; }
+
+  .sidebar {
+    width: 260px;
+    transform: translateX(-105%);
+    box-shadow: 20px 0 55px rgba(0,0,0,.1);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .main { margin-left: 0; }
+
+  .mobile-menu-btn { display: inline-grid; }
+
+  .mobile-brand { display: flex; }
+
+  .topbar {
+    min-height: 72px;
+    padding: 12px 17px;
+    gap: 11px;
+  }
+
+  .topbar .global-search {
+    flex: 1;
+    width: auto;
+  }
+
+  .user-trigger-copy { display: none; }
+
+  .page { padding: 22px 17px 100px; }
+
+  .hero { min-height: 295px; }
+
+  .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  .dashboard-grid,
+  .cart-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-summary { position: static; }
+
+  .mobile-bottom-nav {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 60;
+    display: flex;
+    justify-content: space-around;
+    gap: 2px;
+    padding: 8px 5px max(8px, env(safe-area-inset-bottom));
+    border-top: 1px solid var(--line);
+    background: var(--surface);
+  }
+
+  .mobile-bottom-nav button {
+    flex: 1;
+    display: grid;
+    justify-items: center;
+    gap: 3px;
+    padding: 6px 2px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 9px;
+  }
+
+  .mobile-bottom-nav button.active {
+    background: color-mix(in srgb, var(--accent) 22%, var(--surface));
+    color: var(--text);
+  }
+
+  .mobile-bottom-nav svg { width: 19px; height: 19px; }
+
+  .message-float {
+    right: 13px;
+    bottom: 82px;
+  }
+
+  .message-panel {
+    right: 12px;
+    bottom: 143px;
+  }
+
+  .toast-stack { top: 83px; }
+}
+
+@media (max-width: 620px) {
+  .topbar { gap: 8px; }
+
+  .mobile-brand .brand-mark {
+    width: 35px;
+    height: 35px;
+    border-radius: 11px;
+  }
+
+  .mobile-brand .brand-copy strong { font-size: 14px; }
+  .mobile-brand .brand-copy span { display: none; }
+
+  .topbar .global-search { min-height: 39px; }
+  .topbar .global-search input { font-size: 11px; }
+  .top-actions { gap: 5px; }
+  .top-actions .icon-btn { width: 36px; height: 36px; }
+
+  .page { padding: 19px 13px 100px; }
+
+  .page-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .page-heading .btn { width: 100%; }
+
+  .hero {
+    display: block;
+    min-height: 360px;
+    border-radius: 21px;
+  }
+
+  .hero-copy {
+    padding: 27px 23px 12px;
+  }
+
+  .hero-copy h1 {
+    font-size: clamp(36px, 10vw, 49px);
+    letter-spacing: -2.5px;
+  }
+
+  .hero-copy p { font-size: 12px; }
+
+  .hero-art { min-height: 135px; }
+
+  .hero-art::before {
+    width: 130px;
+    height: 130px;
+    right: 28%;
+    top: -3px;
+  }
+
+  .hero-art::after {
+    width: 100px;
+    height: 100px;
+    right: 32%;
+    top: 13px;
+  }
+
+  .hero-product {
+    width: 67px;
+    height: 78px;
+    border-radius: 13px;
+    font-size: 29px;
+  }
+
+  .hero-product.one { right: 49%; top: 23px; }
+  .hero-product.two {
+    right: 20%;
+    top: 39px;
+    width: 61px;
+    height: 70px;
+    font-size: 27px;
+  }
+
+  .hero-sticker { right: 7%; bottom: 7px; padding: 7px 10px; font-size: 9px; }
+
+  .stats-grid { gap: 9px; margin-bottom: 28px; }
+
+  .stat-card { padding: 12px; gap: 9px; border-radius: 14px; }
+  .stat-icon { width: 34px; height: 34px; border-radius: 10px; }
+  .stat-card strong { font-size: 19px; }
+  .stat-card span { font-size: 9px; }
+
+  .section { margin-top: 28px; }
+  .section-heading h2 { font-size: 19px; }
+
+  .category-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .category-card { min-height: 95px; padding: 11px; border-radius: 14px; }
+  .category-icon { font-size: 21px; }
+  .category-card strong { font-size: 10px; }
+
+  .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .product-visual { height: 155px; }
+  .product-emoji { font-size: 48px; }
+  .product-info { padding: 11px; }
+  .product-info h3 { font-size: 12px; min-height: 36px; }
+  .product-price { font-size: 16px; }
+  .product-actions { grid-template-columns: 1fr 35px; gap: 5px; }
+  .product-actions .btn { min-height: 36px; font-size: 10px; }
+
+  .promo-banner { flex-direction: column; align-items: flex-start; padding: 21px; }
+
+  .form-grid { grid-template-columns: 1fr; }
+  .field.full { grid-column: auto; }
+
+  .profile-layout { grid-template-columns: 1fr; }
+
+  .profile-card { padding: 18px; }
+
+  .cart-item {
+    grid-template-columns: 67px minmax(0,1fr);
+    gap: 11px;
+  }
+
+  .cart-image { width: 67px; height: 75px; font-size: 26px; }
+
+  .cart-item > div:last-child {
+    grid-column: 2;
+  }
+
+  .product-detail-layout { grid-template-columns: 1fr; gap: 18px; }
+  .detail-image { min-height: 210px; max-height: 270px; }
+  .detail-image img { max-height: 270px; }
+  .detail-info h2 { font-size: 23px; }
+
+  .modal-backdrop { padding: 9px; }
+  .modal { max-height: 92vh; border-radius: 18px; }
+  .modal-head { padding: 16px; }
+  .modal-body { padding: 16px; }
+
+  .auth-screen { padding: 10px; align-items: flex-start; }
+  .auth-shell { grid-template-columns: 1fr; border-radius: 18px; margin: auto 0; }
+  .auth-story { min-height: 215px; padding: 22px; }
+  .auth-story h1 { font-size: 34px; margin-top: 23px; }
+  .auth-story p { font-size: 11px; margin-top: 10px; }
+  .auth-story-bottom { margin-top: 20px; }
+  .auth-form-side { padding: 21px; }
+  .auth-form-side h2 { font-size: 22px; margin-top: 0; }
+
+  .message-float { right: 10px; bottom: 78px; padding: 10px 12px; gap: 7px; }
+  .message-float-icon { width: 24px; height: 24px; font-size: 16px; }
+  .message-float strong { font-size: 11px; }
+  .message-float small { font-size: 9px; }
+
+  .message-panel { right: 10px; bottom: 137px; width: calc(100vw - 20px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}
+</style>
+</head>
+
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9M9 21v-7h6v7"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="7.2"/><path d="m16 16 5 5"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 8.8c0 5.2-8.8 11-8.8 11s-8.8-5.8-8.8-11A4.8 4.8 0 0 1 12 6.3a4.8 4.8 0 0 1 8.8 2.5Z"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 24 24"><path d="M3 3h2l2.5 12.5a2 2 0 0 0 2 1.5h8.7a2 2 0 0 0 1.9-1.5L22 8H6"/><circle cx="10" cy="21" r="1"/><circle cx="19" cy="21" r="1"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 6-7"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.4 1.1-1.5 2.6-1.7-.7a8 8 0 0 1-1.8 1L15.6 21h-3.1l-.3-1.9a8 8 0 0 1-1.8-1l-1.7.7-1.5-2.6 1.4-1.1a7 7 0 0 1 0-2.1l-1.4-1.1 1.5-2.6 1.7.7a8 8 0 0 1 1.8-1L12.5 5h3.1l.3 1.9a8 8 0 0 1 1.8 1l1.7-.7 1.5 2.6-1.4 1.1a7 7 0 0 1-.1 4.1Z" transform="translate(-1 -1) scale(1.08)"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5Z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="m18 6-12 12M6 6l12 12"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 5l7 7-7 7"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="M3 8v9l9 5 9-5V8M12 13v9"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 19v2h16v-2"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2m3 0-1 15H6L5 6m4 4v7m6-7v7"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="m15 5 4 4M4 20l4-.8L20 7a2.8 2.8 0 0 0-4-4L4 15l0 5Z"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3h8l5 5v13H6Z"/><path d="M14 3v6h5M9 14h6M9 17h6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></symbol>
+</svg>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand">
+        <div class="brand-mark">M.</div>
+        <div class="brand-copy">
+          <strong>Market Link</strong>
+          <span>YOUR WORLD. ONE MARKETPLACE.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-label">Discover</div>
+    <nav class="nav-list" aria-label="Main navigation">
+      <button class="nav-item active" data-page="home"><svg><use href="#i-home"/></svg>Home dashboard</button>
+      <button class="nav-item" data-page="marketplace"><svg><use href="#i-grid"/></svg>Explore marketplace</button>
+      <button class="nav-item" data-page="categories"><svg><use href="#i-search"/></svg>Categories</button>
+      <button class="nav-item" data-page="wishlist"><svg><use href="#i-heart"/></svg>My wishlist <span class="badge" id="wishBadge">0</span></button>
+      <button class="nav-item" data-page="cart"><svg><use href="#i-cart"/></svg>Shopping cart <span class="badge" id="cartBadge">0</span></button>
+      <button class="nav-item" data-page="orders"><svg><use href="#i-bag"/></svg>My orders</button>
+    </nav>
+
+    <div class="nav-label">Sell & manage</div>
+    <nav class="nav-list">
+      <button class="nav-item" data-page="seller"><svg><use href="#i-chart"/></svg>Seller dashboard</button>
+      <button class="nav-item" data-page="inventory"><svg><use href="#i-box"/></svg>Product inventory</button>
+      <button class="nav-item" data-page="addproduct"><svg><use href="#i-plus"/></svg>Add a product</button>
+      <button class="nav-item" data-page="sellerorders"><svg><use href="#i-bag"/></svg>Sales & orders</button>
+    </nav>
+
+    <div class="nav-label">Your space</div>
+    <nav class="nav-list">
+      <button class="nav-item" data-page="profile"><svg><use href="#i-user"/></svg>My profile</button>
+      <button class="nav-item" data-page="attachments"><svg><use href="#i-file"/></svg>My attachments</button>
+      <button class="nav-item" data-page="notifications"><svg><use href="#i-bell"/></svg>Notifications <span class="badge" id="notificationBadge">0</span></button>
+      <button class="nav-item" data-page="settings"><svg><use href="#i-settings"/></svg>Settings</button>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="seller-promo">
+        <div class="promo-symbol">↗</div>
+        <strong>Build your own shop.</strong>
+        <p>List your products, manage stock and connect with buyers.</p>
+        <button class="btn btn-accent" data-page="addproduct">Start selling <svg><use href="#i-arrow"/></svg></button>
+      </div>
+      <div class="sidebar-foot">
+        <span>Market Link · Prototype</span>
+        <span>v1.0</span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="icon-btn mobile-menu-btn" id="menuToggle" aria-label="Open menu"><svg><use href="#i-menu"/></svg></button>
+
+      <div class="mobile-brand brand">
+        <div class="brand-mark">M.</div>
+        <div class="brand-copy"><strong>Market Link</strong><span>MARKETPLACE</span></div>
+      </div>
+
+      <label class="global-search">
+        <svg><use href="#i-search"/></svg>
+        <input id="globalSearch" type="search" placeholder="Search products, brands, categories..." autocomplete="off">
+      </label>
+
+      <div class="topbar-spacer"></div>
+
+      <div class="top-actions">
+        <button class="icon-btn" id="themeToggle" aria-label="Toggle theme" title="Toggle theme"><svg><use href="#i-moon"/></svg></button>
+        <button class="icon-btn" data-page="notifications" aria-label="Notifications" title="Notifications"><svg><use href="#i-bell"/></svg><span class="badge hidden" id="topNotificationBadge" style="position:absolute;top:-5px;right:-5px">0</span></button>
+        <button class="user-trigger" data-page="profile" aria-label="Open profile">
+          <div class="avatar" id="topAvatar">M</div>
+          <div class="user-trigger-copy"><strong id="topUserName">Guest</strong><small id="topUserRole">Marketplace visitor</small></div>
+        </button>
+      </div>
+    </header>
+
+    <!-- HOME -->
+    <section class="page active" id="page-home">
+      <div class="hero">
+        <div class="hero-copy">
+          <div class="eyebrow">Your world. One marketplace.</div>
+          <h1>Find your next <em>favourite</em> thing.</h1>
+          <p>Discover thoughtful finds, support independent sellers, and bring your next great idea to life—all in one place.</p>
+          <div class="hero-actions">
+            <button class="btn btn-accent" data-page="marketplace">Explore marketplace <svg><use href="#i-arrow"/></svg></button>
+            <button class="btn" data-page="addproduct">Open seller studio</button>
+          </div>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="hero-product one">🎧</div>
+          <div class="hero-product two">👟</div>
+          <div class="hero-sticker">Good finds. Great connections.</div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon">🛍️</div><div><span>Available products</span><strong id="homeProductsCount">0</strong></div></div>
+        <div class="stat-card"><div class="stat-icon">🛒</div><div><span>Items in your cart</span><strong id="homeCartCount">0</strong></div></div>
+        <div class="stat-card"><div class="stat-icon">♡</div><div><span>Saved favourites</span><strong id="homeWishlistCount">0</strong></div></div>
+        <div class="stat-card"><div class="stat-icon">📦</div><div><span>Your orders</span><strong id="homeOrdersCount">0</strong></div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-heading">
+          <div><div class="eyebrow">Shop by interest</div><h2>Explore categories</h2><p>Find exactly what you are looking for.</p></div>
+          <button class="text-btn" data-page="categories">All categories →</button>
+        </div>
+        <div class="category-grid" id="homeCategoryGrid"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-heading">
+          <div><div class="eyebrow">Picked for discovery</div><h2>Trending finds</h2><p>Explore products from across the marketplace.</p></div>
+          <button class="text-btn" data-page="marketplace">View marketplace →</button>
+        </div>
+        <div class="product-grid" id="homeProductGrid"></div>
+      </div>
+
+      <div class="section promo-banner">
+        <div><h2>Your products deserve the spotlight.</h2><p>Build your shop, manage your inventory, and connect directly with interested customers.</p></div>
+        <button class="btn btn-primary" data-page="addproduct">List your first product →</button>
+      </div>
+
+      <div class="section">
+        <div class="section-heading"><div><div class="eyebrow">Your activity</div><h2>Recent orders</h2></div><button class="text-btn" data-page="orders">View all →</button></div>
+        <div id="homeRecentOrders"></div>
+      </div>
+    </section>
+
+    <!-- MARKETPLACE -->
+    <section class="page" id="page-marketplace">
+      <div class="page-heading">
+        <div><div class="eyebrow">The marketplace</div><h1>Discover something good.</h1><p>Explore products, compare finds, and connect with sellers directly.</p></div>
+        <button class="btn btn-primary" data-page="addproduct"><svg><use href="#i-plus"/></svg> Sell a product</button>
+      </div>
+      <div class="product-toolbar">
+        <div class="filter-row" id="marketFilters"></div>
+        <select class="select" id="sortProducts" aria-label="Sort products">
+          <option value="featured">Featured first</option>
+          <option value="newest">Newest first</option>
+          <option value="priceLow">Price: low to high</option>
+          <option value="priceHigh">Price: high to low</option>
+          <option value="name">Name: A to Z</option>
+        </select>
+      </div>
+      <div class="product-grid" id="marketProductGrid"></div>
+    </section>
+
+    <!-- CATEGORIES -->
+    <section class="page" id="page-categories">
+      <div class="page-heading"><div><div class="eyebrow">Browse your way</div><h1>Explore all categories.</h1><p>From everyday essentials to services and specialist products.</p></div></div>
+      <div class="category-grid" id="allCategoryGrid"></div>
+      <div class="section">
+        <div class="section-heading"><div><h2>Products in this category</h2><p id="categorySubtitle">Select a category to explore available listings.</p></div></div>
+        <div class="product-grid" id="categoryProductGrid"></div>
+      </div>
+    </section>
+
+    <!-- WISHLIST -->
+    <section class="page" id="page-wishlist">
+      <div class="page-heading"><div><div class="eyebrow">Saved for later</div><h1>Your wishlist.</h1><p>Keep the products you love close at hand.</p></div></div>
+      <div class="product-grid" id="wishlistGrid"></div>
+    </section>
+
+    <!-- CART -->
+    <section class="page" id="page-cart">
+      <div class="page-heading"><div><div class="eyebrow">Ready when you are</div><h1>Your shopping cart.</h1><p>Review your items before placing a demo order.</p></div></div>
+      <div class="cart-layout">
+        <div class="cart-items" id="cartItems"></div>
+        <aside class="cart-summary">
+          <h3>Order summary</h3>
+          <div class="summary-row"><span>Items subtotal</span><strong id="cartSubtotal">GH₵0.00</strong></div>
+          <div class="summary-row"><span>Delivery estimate</span><strong id="cartDelivery">GH₵0.00</strong></div>
+          <div class="summary-row"><span>Tax</span><strong id="cartTax">GH₵0.00</strong></div>
+          <div class="summary-row summary-total"><span>Total</span><strong id="cartTotal">GH₵0.00</strong></div>
+          <p class="small muted" style="margin:12px 0">Prices are shown in Ghana cedis for this local prototype.</p>
+          <button class="btn btn-primary" id="checkoutBtn">Place demo order →</button>
+          <button class="btn" data-page="marketplace">Continue shopping</button>
+          <p class="small muted" style="margin-top:12px">No payment is collected by this prototype.</p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ORDERS -->
+    <section class="page" id="page-orders">
+      <div class="page-heading"><div><div class="eyebrow">Your purchases</div><h1>Order history.</h1><p>Review your locally recorded marketplace orders.</p></div></div>
+      <div id="ordersContainer"></div>
+    </section>
+
+    <!-- SELLER DASHBOARD -->
+    <section class="page" id="page-seller">
+      <div class="page-heading"><div><div class="eyebrow">Seller studio</div><h1>Your business at a glance.</h1><p>Manage listings, monitor stock, and review demo sales.</p></div><button class="btn btn-primary" data-page="addproduct"><svg><use href="#i-plus"/></svg>Add product</button></div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon">📦</div><div><span>Your listings</span><strong id="sellerListingsCount">0</strong></div></div>
+        <div class="stat-card"><div class="stat-icon">🛒</div><div><span>Items sold</span><strong id="sellerSoldCount">0</strong></div></div>
+        <div class="stat-card"><div class="stat-icon">💰</div><div><span>Demo sales value</span><strong id="sellerSalesValue">GH₵0</strong></div></div>
+        <div class="stat-card"><div class="stat-icon">⚠️</div><div><span>Low-stock listings</span><strong id="sellerLowStock">0</strong></div></div>
+      </div>
+      <div class="dashboard-grid">
+        <div class="panel"><h3>Listing inventory</h3><p class="panel-subtitle">Your current stock distribution.</p><div class="chart" id="sellerStockChart"></div></div>
+        <div class="panel"><h3>Seller quick actions</h3><p class="panel-subtitle">Keep your shop up to date.</p><div style="display:grid;gap:10px;margin-top:18px"><button class="btn" data-page="addproduct">＋ Add a new product</button><button class="btn" data-page="inventory">▤ Manage inventory</button><button class="btn" data-page="sellerorders">▣ Review sales orders</button><button class="btn" data-page="profile">◎ Update seller profile</button></div></div>
+      </div>
+      <div class="section"><div class="section-heading"><div><h2>Your recent listings</h2><p>Products created in this browser.</p></div><button class="text-btn" data-page="inventory">Manage all →</button></div><div id="sellerRecentListings"></div></div>
+    </section>
+
+    <!-- INVENTORY -->
+    <section class="page" id="page-inventory">
+      <div class="page-heading"><div><div class="eyebrow">Product management</div><h1>Your inventory.</h1><p>Update prices and stock, edit listings, or remove products.</p></div><button class="btn btn-primary" data-page="addproduct"><svg><use href="#i-plus"/></svg> New listing</button></div>
+      <div class="product-toolbar"><label class="global-search" style="width:min(400px,100%)"><svg><use href="#i-search"/></svg><input id="inventorySearch" placeholder="Search your listings..."></label><select class="select" id="inventoryFilter"><option value="all">All listings</option><option value="available">In stock</option><option value="out">Out of stock</option><option value="low">Low stock</option></select></div>
+      <div id="inventoryTable"></div>
+    </section>
+
+    <!-- ADD PRODUCT -->
+    <section class="page" id="page-addproduct">
+      <div class="page-heading"><div><div class="eyebrow">Seller studio</div><h1 id="productFormTitle">Create a listing.</h1><p>Present your product clearly so buyers can make informed choices.</p></div></div>
+      <div class="panel">
+        <form id="productForm">
+          <input type="hidden" id="editProductId">
+          <div class="form-grid">
+            <div class="field full"><label for="productTitle">Product name *</label><input id="productTitle" required maxlength="120" placeholder="e.g. Wireless noise-cancelling headphones"></div>
+            <div class="field"><label for="productCategory">Category *</label><select id="productCategory" required></select></div>
+            <div class="field"><label for="productBrand">Brand</label><input id="productBrand" maxlength="80" placeholder="Brand or maker"></div>
+            <div class="field"><label for="productPrice">Price (GH₵) *</label><input id="productPrice" type="number" min="0.01" step="0.01" required placeholder="0.00"></div>
+            <div class="field"><label for="productOldPrice">Previous price (optional)</label><input id="productOldPrice" type="number" min="0" step="0.01" placeholder="For discounts"></div>
+            <div class="field"><label for="productStock">Stock quantity *</label><input id="productStock" type="number" min="0" step="1" required value="1"></div>
+            <div class="field"><label for="productCondition">Condition</label><select id="productCondition"><option>New</option><option>Like new</option><option>Used - good</option><option>Used - fair</option><option>Digital product</option><option>Service</option></select></div>
+            <div class="field"><label for="productSku">SKU / item code</label><input id="productSku" maxlength="50" placeholder="Optional inventory code"></div>
+            <div class="field"><label for="productBrandLocation">Seller location</label><input id="productBrandLocation" maxlength="100" placeholder="e.g. Accra, Ghana"></div>
+            <div class="field"><label for="productDelivery">Delivery information</label><input id="productDelivery" maxlength="160" placeholder="e.g. Delivery arranged with seller"></div>
+            <div class="field full"><label for="productDescription">Product description *</label><textarea id="productDescription" required maxlength="4000" placeholder="Describe the product, features, condition, size, materials, and other useful details."></textarea></div>
+            <div class="field full">
+              <label for="productImage">Product image</label>
+              <div class="file-drop"><div style="font-size:25px">▧</div><strong>Choose a product image</strong><span>Images are stored locally in this browser when storage is available. No fixed file-size limit is imposed by the app.</span><input id="productImage" type="file" accept="image/*"></div>
+              <div id="productImagePreview" class="small muted" style="margin-top:9px">No new image selected.</div>
+            </div>
+          </div>
+          <div class="form-footer"><button type="button" class="btn" id="cancelProductEdit">Clear form</button><button type="submit" class="btn btn-primary" id="saveProductBtn">Publish listing →</button></div>
+        </form>
+      </div>
+    </section>
+
+    <!-- SELLER ORDERS -->
+    <section class="page" id="page-sellerorders">
+      <div class="page-heading"><div><div class="eyebrow">Seller studio</div><h1>Sales & orders.</h1><p>Review demo orders that include products listed by your account.</p></div></div>
+      <div id="sellerOrdersContainer"></div>
+    </section>
+
+    <!-- PROFILE -->
+    <section class="page" id="page-profile">
+      <div class="page-heading"><div><div class="eyebrow">Your account</div><h1>Your profile.</h1><p>Manage your identity, contact details, and seller information.</p></div></div>
+      <div class="profile-layout">
+        <div class="profile-card">
+          <div class="profile-picture" id="profilePicture">M</div>
+          <h3 id="profileCardName">Guest</h3>
+          <p id="profileCardEmail">Not signed in</p>
+          <p id="profileCardRole">Marketplace visitor</p>
+          <div class="profile-picture-actions"><button class="btn" id="chooseProfilePhoto">Change photo</button><button class="btn btn-danger" id="removeProfilePhoto">Remove</button></div>
+          <input class="hidden" type="file" id="profilePhotoInput" accept="image/*">
+          <p style="margin-top:17px">Your photo stays inside its frame and will not cover the page.</p>
+        </div>
+        <div class="settings-stack">
+          <div class="settings-card">
+            <h3>Personal information</h3><p>Update how you appear to buyers and sellers.</p>
+            <form id="profileForm">
+              <div class="form-grid">
+                <div class="field"><label for="profileName">Full name *</label><input id="profileName" maxlength="100" required></div>
+                <div class="field"><label for="profileEmail">Email address</label><input id="profileEmail" type="email" maxlength="150"></div>
+                <div class="field"><label for="profilePhone">Phone number</label><input id="profilePhone" maxlength="30" placeholder="+233..."></div>
+                <div class="field"><label for="profileWhatsApp">WhatsApp number</label><input id="profileWhatsApp" maxlength="30" placeholder="+233203446793"></div>
+                <div class="field"><label for="profileLocation">Location</label><input id="profileLocation" maxlength="120" placeholder="City, country"></div>
+                <div class="field"><label for="profileWebsite">Website / shop link</label><input id="profileWebsite" maxlength="250" placeholder="https://..."></div>
+                <div class="field full"><label for="profileBio">About you</label><textarea id="profileBio" maxlength="1200" placeholder="Tell the community about yourself or your shop."></textarea></div>
+              </div>
+              <div class="form-footer"><button class="btn btn-primary" type="submit">Save profile changes</button></div>
+            </form>
+          </div>
+          <div class="settings-card">
+            <h3>Seller details</h3><p>These details help buyers understand who they are contacting.</p>
+            <div class="form-grid">
+              <div class="field"><label for="profileShopName">Shop name</label><input id="profileShopName" maxlength="100" placeholder="Your shop name"></div>
+              <div class="field"><label for="profileShopType">Shop type</label><select id="profileShopType"><option>Individual seller</option><option>Registered business</option><option>Service provider</option><option>Digital creator</option></select></div>
+            </div>
+            <div class="form-footer"><button class="btn btn-primary" id="saveShopDetails">Save seller details</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ATTACHMENTS -->
+    <section class="page" id="page-attachments">
+      <div class="page-heading"><div><div class="eyebrow">Your files</div><h1>Attachments.</h1><p>Keep supporting documents and personal files together in this browser.</p></div></div>
+      <div class="panel">
+        <div class="file-drop" style="margin-bottom:20px"><div style="font-size:27px">↥</div><strong>Choose files to attach</strong><span>Documents, images, PDFs and other file types. Browser/device storage limits still apply.</span><input id="attachmentInput" type="file" multiple></div>
+        <div id="attachmentList"></div>
+      </div>
+    </section>
+
+    <!-- NOTIFICATIONS -->
+    <section class="page" id="page-notifications">
+      <div class="page-heading"><div><div class="eyebrow">Stay informed</div><h1>Your notifications.</h1><p>See activity recorded in this browser.</p></div><button class="btn" id="markNotificationsRead">Mark all as read</button></div>
+      <div id="notificationList" class="notification-list"></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="page" id="page-settings">
+      <div class="page-heading"><div><div class="eyebrow">Your preferences</div><h1>Settings.</h1><p>Customise your local experience and manage your session.</p></div></div>
+      <div class="settings-stack">
+        <div class="settings-card">
+          <h3>Appearance</h3><p>Choose the look that feels right for you.</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" id="lightModeBtn">☀ Light mode</button><button class="btn" id="darkModeBtn">☾ Dark mode</button></div>
+        </div>
+        <div class="settings-card">
+          <h3>Marketplace preferences</h3><p>Local demo settings. These preferences do not change the fixed Market Link branding.</p>
+          <div class="form-grid">
+            <div class="field"><label for="currencyPreference">Display currency</label><select id="currencyPreference"><option value="GHS">Ghana cedi (GH₵)</option><option value="USD">US dollar ($)</option><option value="GBP">British pound (£)</option><option value="EUR">Euro (€)</option><option value="NGN">Nigerian naira (₦)</option></select><small>Display conversion is not performed; product prices remain the amounts entered.</small></div>
+            <div class="field"><label for="defaultSort">Default product sorting</label><select id="defaultSort"><option value="featured">Featured first</option><option value="newest">Newest first</option><option value="priceLow">Price: low to high</option><option value="priceHigh">Price: high to low</option></select></div>
+          </div>
+          <div class="form-footer"><button class="btn btn-primary" id="savePreferences">Save preferences</button></div>
+        </div>
+        <div class="settings-card">
+          <h3>Account & data</h3><p>This prototype saves information in your browser. It does not provide secure server-side authentication or sync data across devices.</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" id="exportDataBtn">Export marketplace data</button><button class="btn" id="logoutBtn">Log out</button><button class="btn btn-danger" id="clearDataBtn">Clear local marketplace data</button></div>
+        </div>
+      </div>
+    </section>
+
+    <footer style="padding:0 30px 28px;color:var(--muted);font-size:10px">
+      Market Link · Your World. One Marketplace. · Browser-based prototype
+    </footer>
+  </main>
+</div>
+
+<nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+  <button class="active" data-page="home"><svg><use href="#i-home"/></svg>Home</button>
+  <button data-page="marketplace"><svg><use href="#i-grid"/></svg>Explore</button>
+  <button data-page="wishlist"><svg><use href="#i-heart"/></svg>Wishlist</button>
+  <button data-page="cart"><svg><use href="#i-cart"/></svg>Cart</button>
+  <button data-page="profile"><svg><use href="#i-user"/></svg>Account</button>
+</nav>
+
+<!-- GLOBAL MESSAGING BAR -->
+<button class="message-float" id="messageToggle" aria-expanded="false" aria-controls="messagePanel">
+  <span class="message-float-icon">✉</span>
+  <span><strong>Message Market Link</strong><small>Questions? Let's talk.</small></span>
+</button>
+
+<section class="message-panel" id="messagePanel" aria-hidden="true">
+  <div class="message-panel-head">
+    <div><h3>Send us a message</h3><p>We'd love to hear from you.</p></div>
+    <button class="icon-btn" id="messageClose" aria-label="Close messaging"><svg><use href="#i-x"/></svg></button>
+  </div>
+  <form id="messageForm">
+    <label for="messageName">Your name</label>
+    <input id="messageName" required maxlength="80" placeholder="Enter your name">
+    <label for="messageEmail">Email (optional)</label>
+    <input id="messageEmail" type="email" maxlength="150" placeholder="you@example.com">
+    <label for="messageText">Your message</label>
+    <textarea id="messageText" required maxlength="2000" placeholder="How can we help you today?"></textarea>
+    <button class="btn" type="submit">Continue to WhatsApp ↗</button>
+    <span class="small muted">WhatsApp will open with your message prepared. Press Send in WhatsApp to deliver it.</span>
+  </form>
+</section>
+
+<div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+<!-- AUTH -->
+<div class="auth-screen" id="authScreen">
+  <div class="auth-shell">
+    <section class="auth-story">
+      <div class="brand">
+        <div class="brand-mark">M.</div>
+        <div class="brand-copy"><strong style="color:white">Market Link</strong><span style="color:#a6aa9b">YOUR WORLD. ONE MARKETPLACE.</span></div>
+      </div>
+      <div>
+        <div class="eyebrow">A world of possibilities</div>
+        <h1>Discover more.<br><em>Sell with purpose.</em></h1>
+        <p>Find products you love, showcase what you sell, and connect with people through one thoughtful marketplace.</p>
+      </div>
+      <div class="auth-story-bottom">A marketplace prototype built for discovery and connection.</div>
+    </section>
+
+    <section class="auth-form-side">
+      <div class="eyebrow">Welcome to Market Link</div>
+      <h2 id="authTitle">Create your account.</h2>
+      <p id="authSubtitle">Choose how you want to use the marketplace.</p>
+
+      <div class="auth-role-grid">
+        <button class="auth-role selected" data-role="buyer" type="button"><span class="role-icon">🛍️</span><strong>I want to Buy</strong><small>Discover products and connect with sellers.</small></button>
+        <button class="auth-role" data-role="seller" type="button"><span class="role-icon">🏬</span><strong>I want to Sell</strong><small>Create listings and manage your shop.</small></button>
+      </div>
+
+      <div class="auth-tabs">
+        <button type="button" class="active" data-auth-mode="register">Create account</button>
+        <button type="button" data-auth-mode="login">Log in</button>
+      </div>
+
+      <form id="authForm">
+        <div class="auth-fields">
+          <div id="authNameWrap"><label for="authName">Your name</label><input id="authName" required maxlength="100" placeholder="Enter your name" autocomplete="name"></div>
+          <div id="authEmailWrap"><label for="authEmail">Email address</label><input id="authEmail" type="email" required maxlength="150" placeholder="you@example.com" autocomplete="email"></div>
+          <div id="authWhatsAppWrap"><label for="authWhatsApp">WhatsApp number (optional)</label><input id="authWhatsApp" maxlength="30" placeholder="+233203446793" autocomplete="tel"></div>
+          <div><label for="authPassword">Password</label><input id="authPassword" type="password" required minlength="6" maxlength="200" placeholder="At least 6 characters" autocomplete="current-password"></div>
+        </div>
+        <button class="btn btn-accent auth-submit" id="authSubmit" type="submit">Create my account →</button>
+      </form>
+      <div class="auth-disclaimer">🔒 This prototype stores account information in this browser. It is not secure production authentication and does not sync accounts across devices. Do not reuse an important password here.</div>
+    </section>
+  </div>
+</div>
+
+<!-- PRODUCT DETAIL MODAL -->
+<div class="modal-backdrop" id="productModal" role="dialog" aria-modal="true" aria-label="Product details">
+  <div class="modal">
+    <div class="modal-head"><h2>Product details</h2><button class="icon-btn" data-close-modal="productModal" aria-label="Close"><svg><use href="#i-x"/></svg></button></div>
+    <div class="modal-body" id="productModalBody"></div>
+  </div>
+</div>
+
+<!-- GENERIC MODAL -->
+<div class="modal-backdrop" id="genericModal" role="dialog" aria-modal="true">
+  <div class="modal small-modal">
+    <div class="modal-head"><h2 id="genericModalTitle">Confirm action</h2><button class="icon-btn" data-close-modal="genericModal" aria-label="Close"><svg><use href="#i-x"/></svg></button></div>
+    <div class="modal-body" id="genericModalBody"></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* =========================================================
+   MARKET LINK — APP ENGINE
+   Browser-local demo. IndexedDB stores binary files.
+   ========================================================= */
+
+const ML = {
+  key: "marketLinkPremium_v1",
+  dbName: "MarketLinkMedia_v1",
+  dbVersion: 1,
+  activePage: "home",
+  roleChoice: "buyer",
+  authMode: "register",
+  selectedCategory: "All products",
+  searchTerm: "",
+  pendingImage: null,
+  editingId: null,
+  currentProduct: null,
+  currentUser: null,
+  data: null,
+  db: null
+};
+
+const CATEGORIES = [
+  { name: "Electronics", icon: "📱" },
+  { name: "Computers", icon: "💻" },
+  { name: "Fashion", icon: "👕" },
+  { name: "Shoes", icon: "👟" },
+  { name: "Beauty", icon: "💄" },
+  { name: "Home & Living", icon: "🛋️" },
+  { name: "Food & Groceries", icon: "🥑" },
+  { name: "Books & Education", icon: "📚" },
+  { name: "Gaming", icon: "🎮" },
+  { name: "Sports & Fitness", icon: "⚽" },
+  { name: "Jewellery", icon: "💍" },
+  { name: "Toys & Kids", icon: "🧸" },
+  { name: "Automotive", icon: "🚗" },
+  { name: "Tools & Equipment", icon: "🛠️" },
+  { name: "Digital Products", icon: "🧑‍💻" },
+  { name: "Professional Services", icon: "🧰" },
+  { name: "Office Supplies", icon: "🏢" },
+  { name: "Agriculture & Garden", icon: "🌱" },
+  { name: "Art & Handmade", icon: "🎨" },
+  { name: "Other", icon: "📦" }
+];
+
+const $ = id => document.getElementById(id);
+
+function uid(prefix = "id") {
+  return prefix + "_" + Date.now().toString(36) + "_" +
+    Math.random().toString(36).slice(2, 9);
+}
+
+function escapeHTML(value = "") {
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
+
+function money(amount) {
+  const currency = ML.data?.preferences?.currency || "GHS";
+  const symbols = { GHS: "GH₵", USD: "$", GBP: "£", EUR: "€", NGN: "₦" };
+  return (symbols[currency] || "GH₵") +
+    Number(amount || 0).toLocaleString("en-GH", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+}
+
+function initials(name = "Market Link") {
+  return name.trim().split(/\s+/).slice(0, 2).map(part => part[0] || "").join("").toUpperCase() || "M";
+}
+
+function getUser() {
+  return ML.data.users.find(user => user.id === ML.currentUser) || null;
+}
+
+function defaultData() {
+  const demoProducts = [
+    { id: "demo_headphones", title: "Studio Wireless Headphones", category: "Electronics", brand: "Studio", price: 485, oldPrice: 560, stock: 12, condition: "New", sku: "AUD-001", location: "Accra, Ghana", delivery: "Arrange delivery with seller", description: "Enjoy your music with comfortable over-ear headphones designed for everyday listening, study sessions, and travel. Confirm exact specifications and warranty with the seller before purchase.", emoji: "🎧", sellerId: null, sellerName: "Market Link Finds", createdAt: Date.now() - 1000000, demo: true },
+    { id: "demo_sneakers", title: "Everyday Urban Sneakers", category: "Shoes", brand: "Urban", price: 320, oldPrice: 380, stock: 8, condition: "New", sku: "SHO-002", location: "Accra, Ghana", delivery: "Arrange delivery with seller", description: "Versatile everyday sneakers for casual outings. Contact the seller to confirm available sizes, colours, and fit before ordering.", emoji: "👟", sellerId: null, sellerName: "Urban Picks", createdAt: Date.now() - 900000, demo: true },
+    { id: "demo_watch", title: "Minimal Classic Wristwatch", category: "Fashion", brand: "Classic", price: 275, oldPrice: 0, stock: 15, condition: "New", sku: "FAS-003", location: "Kumasi, Ghana", delivery: "Arrange delivery with seller", description: "A minimalist wristwatch suited to everyday outfits and special occasions. Ask the seller for materials, measurements, and care details.", emoji: "⌚", sellerId: null, sellerName: "Classic Corner", createdAt: Date.now() - 800000, demo: true },
+    { id: "demo_bag", title: "Structured Everyday Tote", category: "Fashion", brand: "Everyday", price: 190, oldPrice: 0, stock: 6, condition: "New", sku: "FAS-004", location: "Accra, Ghana", delivery: "Arrange delivery with seller", description: "A versatile tote for carrying daily essentials. Check dimensions and available colour options with the seller.", emoji: "👜", sellerId: null, sellerName: "Everyday Goods", createdAt: Date.now() - 700000, demo: true },
+    { id: "demo_keyboard", title: "Compact Mechanical Keyboard", category: "Computers", brand: "KeyWorks", price: 410, oldPrice: 450, stock: 9, condition: "New", sku: "TEC-005", location: "Accra, Ghana", delivery: "Arrange delivery with seller", description: "A compact keyboard for study and productivity setups. Contact the seller to confirm layout, connection type, and switch specifications.", emoji: "⌨️", sellerId: null, sellerName: "Desk Setup", createdAt: Date.now() - 600000, demo: true },
+    { id: "demo_skincare", title: "Daily Care Essentials Set", category: "Beauty", brand: "Daily Care", price: 145, oldPrice: 0, stock: 10, condition: "New", sku: "BEA-006", location: "Tema, Ghana", delivery: "Arrange delivery with seller", description: "A personal-care gift set. Please check the ingredients, suitability, and packaging details with the seller before buying.", emoji: "🧴", sellerId: null, sellerName: "Care & Co.", createdAt: Date.now() - 500000, demo: true },
+    { id: "demo_book", title: "Creative Thinking Journal", category: "Books & Education", brand: "Paper Studio", price: 65, oldPrice: 0, stock: 25, condition: "New", sku: "BOK-007", location: "Accra, Ghana", delivery: "Arrange delivery with seller", description: "A journal for notes, planning, creative thinking, and personal projects. Ask about paper size and page count if these matter to you.", emoji: "📓", sellerId: null, sellerName: "Paper Studio", createdAt: Date.now() - 400000, demo: true },
+    { id: "demo_speaker", title: "Portable Bluetooth Speaker", category: "Electronics", brand: "Sound", price: 220, oldPrice: 0, stock: 0, condition: "New", sku: "AUD-008", location: "Accra, Ghana", delivery: "Ask seller about restocking", description: "A portable speaker listing currently marked out of stock. Message the seller to ask about specifications and possible restocking.", emoji: "🔊", sellerId: null, sellerName: "Sound Corner", createdAt: Date.now() - 300000, demo: true }
+  ];
+
+  return {
+    users: [],
+    products: demoProducts,
+    cart: [],
+    wishlist: [],
+    orders: [],
+    notifications: [],
+    attachments: [],
+    sessions: { userId: null },
+    preferences: {
+      theme: "light",
+      currency: "GHS",
+      defaultSort: "featured"
+    },
+    sequence: 1
+  };
+}
+
+function saveData() {
+  try {
+    const serializable = {
+      ...ML.data,
+      products: ML.data.products.map(product => ({
+        ...product,
+        image: undefined
+      }))
+    };
+    localStorage.setItem(ML.key, JSON.stringify(serializable));
+    return true;
+  } catch (error) {
+    console.error("Could not save Market Link data:", error);
+    toast("Browser storage is unavailable or full. Your latest changes may not persist.", "error");
+    return false;
+  }
+}
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(ML.key);
+    if (!raw) return defaultData();
+    const parsed = JSON.parse(raw);
+    const base = defaultData();
+    return {
+      ...base,
+      ...parsed,
+      users: Array.isArray(parsed.users) ? parsed.users : [],
+      products: Array.isArray(parsed.products) ? parsed.products : base.products,
+      cart: Array.isArray(parsed.cart) ? parsed.cart : [],
+      wishlist: Array.isArray(parsed.wishlist) ? parsed.wishlist : [],
+      orders: Array.isArray(parsed.orders) ? parsed.orders : [],
+      notifications: Array.isArray(parsed.notifications) ? parsed.notifications : [],
+      attachments: Array.isArray(parsed.attachments) ? parsed.attachments : [],
+      preferences: { ...base.preferences, ...(parsed.preferences || {}) }
+    };
+  } catch (error) {
+    console.error("Could not load Market Link data:", error);
+    return defaultData();
+  }
+}
+
+function toast(message, type = "") {
+  const node = document.createElement("div");
+  node.className = "toast " + type;
+  node.textContent = message;
+  $("toastStack").appendChild(node);
+  setTimeout(() => node.remove(), 3600);
+}
+
+function notify(title, message, icon = "✦") {
+  ML.data.notifications.unshift({
+    id: uid("note"),
+    title,
+    message,
+    icon,
+    read: false,
+    createdAt: Date.now()
+  });
+  ML.data.notifications = ML.data.notifications.slice(0, 100);
+  saveData();
+  updateBadges();
+}
+
+function categoryIcon(category) {
+  return CATEGORIES.find(item => item.name === category)?.icon || "📦";
+}
+
+function imageMarkup(item, className = "") {
+  if (item.imageUrl) {
+    return `<img class="${className}" src="${escapeHTML(item.imageUrl)}" alt="${escapeHTML(item.title || item.name || "Image")}" loading="lazy">`;
+  }
+  return `<span class="product-emoji">${escapeHTML(item.emoji || categoryIcon(item.category))}</span>`;
+}
+
+/* IndexedDB for actual files instead of storing images in localStorage. */
+
+function openMediaDB() {
+  return new Promise((resolve, reject) => {
+    if (!("indexedDB" in window)) {
+      reject(new Error("IndexedDB is unavailable in this browser."));
+      return;
+    }
+    const request = indexedDB.open(ML.dbName, ML.dbVersion);
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains("media")) {
+        db.createObjectStore("media", { keyPath: "id" });
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error || new Error("Unable to open media storage."));
+  });
+}
+
+function storeBlob(blob, name = "file") {
+  return new Promise((resolve, reject) => {
+    if (!ML.db) {
+      reject(new Error("Browser file storage is unavailable."));
+      return;
+    }
+    const id = uid("media");
+    const transaction = ML.db.transaction("media", "readwrite");
+    transaction.objectStore("media").put({ id, blob, name, type: blob.type || "", createdAt: Date.now() });
+    transaction.oncomplete = () => resolve(id);
+    transaction.onerror = () => reject(transaction.error || new Error("Unable to store file."));
+    transaction.onabort = () => reject(transaction.error || new Error("File storage was interrupted."));
+  });
+}
+
+function getBlob(id) {
+  return new Promise((resolve, reject) => {
+    if (!ML.db || !id) return resolve(null);
+    const request = ML.db.transaction("media", "readonly").objectStore("media").get(id);
+    request.onsuccess = () => resolve(request.result || null);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+function deleteBlob(id) {
+  return new Promise(resolve => {
+    if (!ML.db || !id) return resolve();
+    const transaction = ML.db.transaction("media", "readwrite");
+    transaction.objectStore("media").delete(id);
+    transaction.oncomplete = resolve;
+    transaction.onerror = resolve;
+  });
+}
+
+function mediaURL(id) {
+  return getBlob(id).then(record => record ? URL.createObjectURL(record.blob) : "");
+}
+
+function formatBytes(bytes = 0) {
+  if (bytes < 1024) return bytes + " B";
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+  if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+  return (bytes / (1024 * 1024 * 1024)).toFixed(2) + " GB";
+}
+
+async function hydrateImages() {
+  for (const product of ML.data.products) {
+    if (product.imageId) {
+      try { product.imageUrl = await mediaURL(product.imageId); }
+      catch (error) { console.warn(error); }
+    }
+  }
+
+  for (const user of ML.data.users) {
+    if (user.photoId) {
+      try { user.photoUrl = await mediaURL(user.photoId); }
+      catch (error) { console.warn(error); }
+    }
+  }
+
+  for (const file of ML.data.attachments) {
+    if (file.mediaId) {
+      try { file.url = await mediaURL(file.mediaId); }
+      catch (error) { console.warn(error); }
+    }
+  }
+}
+
+/* AUTHENTICATION — local demo only, not production security. */
+
+function openAuth() {
+  $("authScreen").classList.add("open");
+  $("authScreen").setAttribute("aria-hidden", "false");
+}
+
+function closeAuth() {
+  $("authScreen").classList.remove("open");
+  $("authScreen").setAttribute("aria-hidden", "true");
+}
+
+function setAuthRole(role) {
+  ML.roleChoice = role;
+  document.querySelectorAll(".auth-role").forEach(button => {
+    button.classList.toggle("selected", button.dataset.role === role);
+  });
+}
+
+function setAuthMode(mode) {
+  ML.authMode = mode;
+  document.querySelectorAll("[data-auth-mode]").forEach(button => {
+    button.classList.toggle("active", button.dataset.authMode === mode);
+  });
+
+  const register = mode === "register";
+  $("authNameWrap").classList.toggle("hidden", !register);
+  $("authWhatsAppWrap").classList.toggle("hidden", !register);
+  $("authName").required = register;
+  $("authEmail").required = true;
+  $("authTitle").textContent = register ? "Create your account." : "Welcome back.";
+  $("authSubtitle").textContent = register
+    ? "Choose how you want to use the marketplace."
+    : "Log in to the account saved in this browser.";
+  $("authSubmit").textContent = register ? "Create my account →" : "Log in →";
+  $("authPassword").autocomplete = register ? "new-password" : "current-password";
+}
+
+function handleAuth(event) {
+  event.preventDefault();
+  const email = $("authEmail").value.trim().toLowerCase();
+  const password = $("authPassword").value;
+  const name = $("authName").value.trim();
+  const whatsApp = $("authWhatsApp").value.trim();
+
+  if (!email || password.length < 6) {
+    toast("Enter a valid email and a password with at least 6 characters.", "error");
+    return;
+  }
+
+  if (ML.authMode === "register") {
+    if (!name) return toast("Please enter your name.", "error");
+    if (ML.data.users.some(user => user.email.toLowerCase() === email)) {
+      toast("An account with that email already exists in this browser. Try logging in.", "error");
+      setAuthMode("login");
+      return;
+    }
+
+    const user = {
+      id: uid("user"),
+      name,
+      email,
+      passwordDemo: password,
+      role: ML.roleChoice,
+      whatsapp: normalizePhone(whatsApp),
+      phone: "",
+      location: "",
+      website: "",
+      bio: "",
+      shopName: "",
+      shopType: "Individual seller",
+      photoId: null,
+      createdAt: Date.now()
+    };
+
+    ML.data.users.push(user);
+    ML.currentUser = user.id;
+    ML.data.sessions.userId = user.id;
+    notify("Welcome to Market Link", "Your local account has been created.", "👋");
+    saveData();
+    closeAuth();
+    renderAll();
+    toast("Welcome, " + name + "!", "success");
+    return;
+  }
+
+  const user = ML.data.users.find(item =>
+    item.email.toLowerCase() === email && item.passwordDemo === password
+  );
+
+  if (!user) {
+    toast("Those details do not match an account saved in this browser.", "error");
+    return;
+  }
+
+  ML.currentUser = user.id;
+  ML.data.sessions.userId = user.id;
+  saveData();
+  closeAuth();
+  renderAll();
+  toast("Welcome back, " + user.name + "!", "success");
+}
+
+function logout() {
+  ML.currentUser = null;
+  ML.data.sessions.userId = null;
+  saveData();
+  renderAll();
+  openAuth();
+  setAuthMode("login");
+  toast("You have logged out of this browser session.");
+}
+
+/* NAVIGATION */
+
+function goPage(page) {
+  const element = $("page-" + page);
+  if (!element) return;
+
+  ML.activePage = page;
+  document.querySelectorAll(".page").forEach(section => {
+    section.classList.toggle("active", section.id === "page-" + page);
+  });
+
+  document.querySelectorAll(".nav-item[data-page], .mobile-bottom-nav [data-page]")
+    .forEach(button => button.classList.toggle("active", button.dataset.page === page));
+
+  $("sidebar").classList.remove("open");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  renderPage(page);
+}
+
+/* CATEGORIES */
+
+function renderCategories() {
+  const markup = CATEGORIES.map(category => `
+    <button class="category-card ${ML.selectedCategory === category.name ? "selected" : ""}"
+      data-category="${escapeHTML(category.name)}">
+      <span class="category-icon">${category.icon}</span>
+      <strong>${escapeHTML(category.name)}</strong>
+    </button>
+  `).join("");
+
+  $("homeCategoryGrid").innerHTML = markup;
+  $("allCategoryGrid").innerHTML = `
+    <button class="category-card ${ML.selectedCategory === "All products" ? "selected" : ""}" data-category="All products">
+      <span class="category-icon">✦</span><strong>All products</strong>
+    </button>
+  ` + markup;
+
+  $("productCategory").innerHTML = CATEGORIES.map(category =>
+    `<option value="${escapeHTML(category.name)}">${escapeHTML(category.name)}</option>`
+  ).join("");
+}
+
+function selectCategory(category) {
+  ML.selectedCategory = category;
+  $("categorySubtitle").textContent = category === "All products"
+    ? "Showing products from all categories."
+    : "Showing products in " + category + ".";
+
+  renderCategories();
+  renderCategoryProducts();
+  renderMarketplace();
+  goPage("categories");
+}
+
+/* PRODUCT QUERIES */
+
+function getVisibleProducts() {
+  let products = ML.data.products.filter(product => {
+    const categoryMatch = ML.selectedCategory === "All products" ||
+      product.category === ML.selectedCategory;
+    const term = ML.searchTerm.toLowerCase();
+    const searchMatch = !term || [
+      product.title, product.category, product.description, product.brand,
+      product.sellerName, product.location, product.sku
+    ].some(value => String(value || "").toLowerCase().includes(term));
+    return categoryMatch && searchMatch;
+  });
+
+  const sort = $("sortProducts")?.value || ML.data.preferences.defaultSort || "featured";
+
+  if (sort === "newest") products.sort((a, b) => b.createdAt - a.createdAt);
+  else if (sort === "priceLow") products.sort((a, b) => a.price - b.price);
+  else if (sort === "priceHigh") products.sort((a, b) => b.price - a.price);
+  else if (sort === "name") products.sort((a, b) => a.title.localeCompare(b.title));
+  else products.sort((a, b) => Number(b.featured || b.demo || false) - Number(a.featured || a.demo || false) || b.createdAt - a.createdAt);
+
+  return products;
+}
+
+function productCard(product) {
+  const saved = ML.data.wishlist.includes(product.id);
+  const available = Number(product.stock) > 0;
+  const price = money(product.price);
+  const oldPrice = Number(product.oldPrice) > Number(product.price)
+    ? `<span class="product-old-price">${money(product.oldPrice)}</span>` : "";
+
+  return `
+    <article class="product-card">
+      <div class="product-visual" data-open-product="${escapeHTML(product.id)}">
+        ${product.imageUrl ? `<img src="${escapeHTML(product.imageUrl)}" alt="${escapeHTML(product.title)}" loading="lazy">` : `<span class="product-emoji">${escapeHTML(product.emoji || categoryIcon(product.category))}</span>`}
+        ${product.oldPrice > product.price && product.price > 0 ? `<span class="product-tag">SPECIAL PRICE</span>` : ""}
+        ${!available ? `<span class="product-tag" style="top:auto;bottom:10px;background:#fff0f0;color:#b33434">OUT OF STOCK</span>` : ""}
+        <button class="product-fav ${saved ? "saved" : ""}" data-wishlist="${escapeHTML(product.id)}" aria-label="Toggle wishlist">
+          <svg><use href="#i-heart"/></svg>
+        </button>
+      </div>
+      <div class="product-info">
+        <div class="product-category">${escapeHTML(product.category)} · ${escapeHTML(product.condition || "New")}</div>
+        <h3 data-open-product="${escapeHTML(product.id)}">${escapeHTML(product.title)}</h3>
+        <div class="product-price-row"><span class="product-price">${price}</span>${oldPrice}</div>
+        <div class="product-meta"><span>${available ? "● In stock: " + product.stock : "● Unavailable"}</span><span>☆ New find</span></div>
+        <div class="product-actions">
+          <button class="btn ${available ? "btn-primary" : ""}" data-product-action="${available ? "cart" : "restock"}" data-product-id="${escapeHTML(product.id)}">
+            ${available ? "Add to cart" : "Ask seller"}
+          </button>
+          <button class="icon-btn" data-open-product="${escapeHTML(product.id)}" aria-label="View product"><svg><use href="#i-eye"/></svg></button>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function productGridMarkup(products, emptyMessage = "Try changing your search or filters.") {
+  if (!products.length) {
+    return `<div class="empty-state"><div class="empty-icon">🔎</div><h3>No products found</h3><p>${escapeHTML(emptyMessage)}</p><button class="btn btn-primary" data-page="addproduct">Create a listing</button></div>`;
+  }
+  return products.map(productCard).join("");
+}
+
+function renderHomeProducts() {
+  const products = getVisibleProducts();
+  $("homeProductGrid").innerHTML = productGridMarkup(products.slice(0, 4));
+}
+
+function renderMarketplace() {
+  const filterMarkup = `<button class="filter-chip ${ML.selectedCategory === "All products" ? "active" : ""}" data-category="All products">All products</button>` +
+    CATEGORIES.slice(0, 9).map(category =>
+      `<button class="filter-chip ${ML.selectedCategory === category.name ? "active" : ""}" data-category="${escapeHTML(category.name)}">${escapeHTML(category.name)}</button>`
+    ).join("");
+
+  $("marketFilters").innerHTML = filterMarkup;
+  $("marketProductGrid").innerHTML = productGridMarkup(getVisibleProducts());
+}
+
+function renderCategoryProducts() {
+  const products = ML.data.products.filter(product =>
+    ML.selectedCategory === "All products" || product.category === ML.selectedCategory
+  );
+  $("categoryProductGrid").innerHTML = productGridMarkup(products);
+}
+
+function renderWishlist() {
+  const products = ML.data.products.filter(product => ML.data.wishlist.includes(product.id));
+  $("wishlistGrid").innerHTML = productGridMarkup(products, "Save products with the heart button to find them here later.");
+}
+
+/* PRODUCT DETAILS */
+
+function openProduct(id) {
+  const product = ML.data.products.find(item => item.id === id);
+  if (!product) return toast("This product could not be found.", "error");
+
+  ML.currentProduct = id;
+  const available = Number(product.stock) > 0;
+  const seller = product.sellerId
+    ? ML.data.users.find(user => user.id === product.sellerId)
+    : null;
+
+  const sellerName = seller?.shopName || seller?.name || product.sellerName || "Marketplace seller";
+  const sellerPhone = seller?.whatsapp || product.whatsapp || "";
+  const image = product.imageUrl
+    ? `<img src="${escapeHTML(product.imageUrl)}" alt="${escapeHTML(product.title)}">`
+    : escapeHTML(product.emoji || categoryIcon(product.category));
+
+  $("productModalBody").innerHTML = `
+    <div class="product-detail-layout">
+      <div class="detail-image">${image}</div>
+      <div class="detail-info">
+        <div class="eyebrow">${escapeHTML(product.category)} · ${escapeHTML(product.condition || "New")}</div>
+        <h2>${escapeHTML(product.title)}</h2>
+        <div class="detail-price">${money(product.price)} ${product.oldPrice > product.price ? `<span class="product-old-price">${money(product.oldPrice)}</span>` : ""}</div>
+        <span class="pill ${available ? "available" : "out"}">${available ? "● In stock · " + product.stock + " available" : "● Currently out of stock"}</span>
+        <p style="margin-top:15px">${escapeHTML(product.description || "Contact the seller for further details.")}</p>
+        <div style="display:grid;gap:8px;margin-top:15px">
+          <div class="small"><span class="muted">Brand:</span> ${escapeHTML(product.brand || "Not specified")}</div>
+          <div class="small"><span class="muted">Condition:</span> ${escapeHTML(product.condition || "Not specified")}</div>
+          <div class="small"><span class="muted">Location:</span> ${escapeHTML(product.location || "Ask seller")}</div>
+          <div class="small"><span class="muted">Delivery:</span> ${escapeHTML(product.delivery || "Confirm with seller")}</div>
+          <div class="small"><span class="muted">Seller:</span> ${escapeHTML(sellerName)}</div>
+        </div>
+        <div class="detail-actions">
+          ${available ? `<button class="btn btn-primary" data-product-action="cart" data-product-id="${escapeHTML(product.id)}">Add to cart →</button>` : `<button class="btn btn-primary" data-product-action="restock" data-product-id="${escapeHTML(product.id)}">Ask about restocking</button>`}
+          <button class="btn" data-wishlist="${escapeHTML(product.id)}">♡ Save to wishlist</button>
+          <button class="btn" data-contact-seller="${escapeHTML(product.id)}">✉ Contact seller on WhatsApp</button>
+        </div>
+        ${!sellerPhone ? `<p class="small" style="margin-top:12px">The seller has not added a WhatsApp number to this listing's account.</p>` : ""}
+      </div>
+    </div>
+  `;
+  $("productModal").classList.add("open");
+}
+
+function closeModal(id) {
+  $(id)?.classList.remove("open");
+}
+
+/* CART & WISHLIST */
+
+function cartQuantity() {
+  return ML.data.cart.reduce((sum, item) => sum + item.qty, 0);
+}
+
+function cartProduct(id) {
+  return ML.data.products.find(product => product.id === id);
+}
+
+function addToCart(id) {
+  const product = cartProduct(id);
+  if (!product) return toast("Product not found.", "error");
+  if (product.stock < 1) return toast("This product is out of stock. Contact the seller to enquire about restocking.", "error");
+
+  const existing = ML.data.cart.find(item => item.productId === id);
+  if (existing) {
+    if (existing.qty >= product.stock) return toast("Your cart already contains all currently available stock.", "error");
+    existing.qty += 1;
+  } else {
+    ML.data.cart.push({ productId: id, qty: 1 });
+  }
+
+  saveData();
+  updateBadges();
+  renderCart();
+  toast("Added to your cart.", "success");
+}
+
+function changeCartQty(id, delta) {
+  const item = ML.data.cart.find(cartItem => cartItem.productId === id);
+  const product = cartProduct(id);
+  if (!item || !product) return;
+
+  const next = item.qty + delta;
+  if (next <= 0) {
+    ML.data.cart = ML.data.cart.filter(cartItem => cartItem.productId !== id);
+  } else if (next <= product.stock) {
+    item.qty = next;
+  } else {
+    toast("Quantity cannot exceed available stock.", "error");
+  }
+
+  saveData();
+  renderAll();
+}
+
+function toggleWishlist(id) {
+  if (ML.data.wishlist.includes(id)) {
+    ML.data.wishlist = ML.data.wishlist.filter(item => item !== id);
+    toast("Removed from wishlist.");
+  } else {
+    ML.data.wishlist.push(id);
+    toast("Saved to your wishlist.", "success");
+  }
+  saveData();
+  updateBadges();
+  renderHomeProducts();
+  renderMarketplace();
+  renderWishlist();
+  renderCategoryProducts();
+  if (ML.currentProduct === id) openProduct(id);
+}
+
+function cartTotals() {
+  const subtotal = ML.data.cart.reduce((sum, item) => {
+    const product = cartProduct(item.productId);
+    return sum + (product ? product.price * item.qty : 0);
+  }, 0);
+  const delivery = subtotal > 0 ? 15 : 0;
+  const tax = subtotal * 0.015;
+  return { subtotal, delivery, tax, total: subtotal + delivery + tax };
+}
+
+function renderCart() {
+  const items = ML.data.cart.filter(item => cartProduct(item.productId));
+  if (!items.length) {
+    $("cartItems").innerHTML = `<div class="empty-state"><div class="empty-icon">🛒</div><h3>Your cart is waiting.</h3><p>Explore the marketplace and add something you love.</p><button class="btn btn-primary" data-page="marketplace">Explore products</button></div>`;
+  } else {
+    $("cartItems").innerHTML = items.map(item => {
+      const product = cartProduct(item.productId);
+      return `
+        <article class="cart-item">
+          <div class="cart-image">${product.imageUrl ? `<img src="${escapeHTML(product.imageUrl)}" alt="${escapeHTML(product.title)}">` : escapeHTML(product.emoji || categoryIcon(product.category))}</div>
+          <div>
+            <h3>${escapeHTML(product.title)}</h3>
+            <p>${escapeHTML(product.category)} · ${money(product.price)} each</p>
+            <div class="qty-control">
+              <button data-qty="-1" data-product-id="${escapeHTML(product.id)}" aria-label="Decrease quantity">−</button>
+              <strong>${item.qty}</strong>
+              <button data-qty="1" data-product-id="${escapeHTML(product.id)}" aria-label="Increase quantity">+</button>
+              <button class="text-btn" style="color:var(--danger);font-size:11px" data-remove-cart="${escapeHTML(product.id)}">Remove</button>
+            </div>
+          </div>
+          <strong>${money(product.price * item.qty)}</strong>
+        </article>`;
+    }).join("");
+  }
+
+  const totals = cartTotals();
+  $("cartSubtotal").textContent = money(totals.subtotal);
+  $("cartDelivery").textContent = money(totals.delivery);
+  $("cartTax").textContent = money(totals.tax);
+  $("cartTotal").textContent = money(totals.total);
+  $("checkoutBtn").disabled = !items.length;
+}
+
+function checkout() {
+  if (!ML.data.cart.length) return toast("Your cart is empty.", "error");
+  const user = getUser();
+  if (!user) {
+    openAuth();
+    return toast("Create an account or log in before placing an order.", "error");
+  }
+
+  const unavailable = ML.data.cart.find(item => {
+    const product = cartProduct(item.productId);
+    return !product || product.stock < item.qty;
+  });
+
+  if (unavailable) {
+    renderCart();
+    return toast("One or more products no longer have enough stock. Review your cart.", "error");
+  }
+
+  const totals = cartTotals();
+  const order = {
+    id: uid("order"),
+    orderNumber: "ML-" + Date.now().toString().slice(-8),
+    buyerId: user.id,
+    buyerName: user.name,
+    items: ML.data.cart.map(item => {
+      const product = cartProduct(item.productId);
+      product.stock -= item.qty;
+      return {
+        productId: product.id,
+        title: product.title,
+        price: product.price,
+        qty: item.qty,
+        sellerId: product.sellerId || null,
+        sellerName: product.sellerName || "Marketplace seller"
+      };
+    }),
+    subtotal: totals.subtotal,
+    delivery: totals.delivery,
+    tax: totals.tax,
+    total: totals.total,
+    status: "Pending confirmation",
+    createdAt: Date.now(),
+    demo: true
+  };
+
+  ML.data.orders.unshift(order);
+  ML.data.cart = [];
+  notify("Demo order created", "Order " + order.orderNumber + " has been recorded locally. No payment was processed.", "📦");
+  saveData();
+  renderAll();
+  goPage("orders");
+  toast("Demo order created. No payment was taken.", "success");
+}
+
+/* SELLER INVENTORY */
+
+function myProducts() {
+  const user = getUser();
+  if (!user) return [];
+  return ML.data.products.filter(product => product.sellerId === user.id);
+}
+
+function renderInventory() {
+  const search = ($("inventorySearch")?.value || "").trim().toLowerCase();
+  const filter = $("inventoryFilter")?.value || "all";
+
+  const products = myProducts().filter(product => {
+    const textMatch = !search || (product.title + " " + product.category + " " + product.sku).toLowerCase().includes(search);
+    const stock = Number(product.stock);
+    const stockMatch = filter === "all" ||
+      (filter === "available" && stock > 0) ||
+      (filter === "out" && stock === 0) ||
+      (filter === "low" && stock > 0 && stock <= 5);
+    return textMatch && stockMatch;
+  });
+
+  if (!products.length) {
+    $("inventoryTable").innerHTML = `<div class="empty-state"><div class="empty-icon">📦</div><h3>No matching listings</h3><p>Add a product to begin building your shop, or change the inventory filters.</p><button class="btn btn-primary" data-page="addproduct">Add a product</button></div>`;
+    return;
+  }
+
+  $("inventoryTable").innerHTML = `
+    <div class="table-wrap"><table>
+      <thead><tr><th>Product</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>${products.map(product => `
+        <tr>
+          <td><div class="table-product"><div class="table-product-image">${product.imageUrl ? `<img src="${escapeHTML(product.imageUrl)}" alt="">` : escapeHTML(product.emoji || categoryIcon(product.category))}</div><div><strong>${escapeHTML(product.title)}</strong><span class="muted small">${escapeHTML(product.category)}</span></div></div></td>
+          <td><strong>${money(product.price)}</strong></td>
+          <td><input aria-label="Stock quantity" type="number" min="0" step="1" value="${Number(product.stock)}" data-stock-input="${escapeHTML(product.id)}" style="width:75px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text)"></td>
+          <td><span class="status ${product.stock > 0 ? "done" : "cancelled"}">${product.stock > 0 ? (product.stock <= 5 ? "Low stock" : "Available") : "Out of stock"}</span></td>
+          <td><div style="display:flex;gap:6px"><button class="icon-btn" data-edit-product="${escapeHTML(product.id)}" title="Edit"><svg><use href="#i-edit"/></svg></button><button class="icon-btn" data-delete-product="${escapeHTML(product.id)}" title="Delete"><svg><use href="#i-trash"/></svg></button></div></td>
+        </tr>`).join("")}
+      </tbody>
+    </table></div>
+    <p class="small muted" style="margin-top:12px">Stock changes are saved in this browser. Listings are not published to a shared server.</p>`;
+}
+
+function renderSellerDashboard() {
+  const products = myProducts();
+  const orders = ML.data.orders.filter(order => order.items.some(item => item.sellerId === ML.currentUser));
+  const sold = orders.reduce((sum, order) => sum + order.items.filter(item => item.sellerId === ML.currentUser).reduce((n, item) => n + item.qty, 0), 0);
+  const sales = orders.reduce((sum, order) => sum + order.items.filter(item => item.sellerId === ML.currentUser).reduce((n, item) => n + item.qty * item.price, 0), 0);
+
+  $("sellerListingsCount").textContent = products.length;
+  $("sellerSoldCount").textContent = sold;
+  $("sellerSalesValue").textContent = money(sales);
+  $("sellerLowStock").textContent = products.filter(product => product.stock <= 5).length;
+
+  const stockGroups = [
+    { label: "In stock", count: products.filter(product => product.stock > 5).length },
+    { label: "Low stock", count: products.filter(product => product.stock > 0 && product.stock <= 5).length },
+    { label: "Out", count: products.filter(product => product.stock === 0).length }
+  ];
+  const max = Math.max(1, ...stockGroups.map(group => group.count));
+
+  $("sellerStockChart").innerHTML = stockGroups.map(group => `
+    <div class="chart-column">
+      <div class="chart-bar" style="height:${Math.max(5, group.count / max * 100)}%"></div>
+      <span>${group.label}</span><strong style="font-size:10px">${group.count}</strong>
+    </div>`).join("");
+
+  $("sellerRecentListings").innerHTML = products.length
+    ? `<div class="table-wrap"><table><thead><tr><th>Product</th><th>Price</th><th>Stock</th><th></th></tr></thead><tbody>${products.slice(0, 5).map(product => `<tr><td><div class="table-product"><div class="table-product-image">${product.imageUrl ? `<img src="${escapeHTML(product.imageUrl)}" alt="">` : escapeHTML(product.emoji || categoryIcon(product.category))}</div><strong>${escapeHTML(product.title)}</strong></div></td><td>${money(product.price)}</td><td>${product.stock}</td><td><button class="btn" data-edit-product="${escapeHTML(product.id)}">Edit</button></td></tr>`).join("")}</tbody></table></div>`
+    : `<div class="empty-state"><div class="empty-icon">🏬</div><h3>Your shop starts here</h3><p>You haven't created any listings yet.</p><button class="btn btn-primary" data-page="addproduct">Add your first product</button></div>`;
+}
+
+function renderSellerOrders() {
+  const orders = ML.data.orders.filter(order => order.items.some(item => item.sellerId === ML.currentUser));
+
+  if (!orders.length) {
+    $("sellerOrdersContainer").innerHTML = `<div class="empty-state"><div class="empty-icon">📦</div><h3>No sales orders yet</h3><p>When demo orders include your products, they will appear here.</p><button class="btn btn-primary" data-page="inventory">Manage listings</button></div>`;
+    return;
+  }
+
+  $("sellerOrdersContainer").innerHTML = `<div class="table-wrap"><table><thead><tr><th>Order</th><th>Buyer</th><th>Items</th><th>Value</th><th>Status</th><th>Action</th></tr></thead><tbody>${orders.map(order => {
+    const items = order.items.filter(item => item.sellerId === ML.currentUser);
+    const total = items.reduce((sum, item) => sum + item.price * item.qty, 0);
+    return `<tr><td><strong>${escapeHTML(order.orderNumber)}</strong><div class="small muted">${new Date(order.createdAt).toLocaleDateString()}</div></td><td>${escapeHTML(order.buyerName)}</td><td>${items.reduce((sum, item) => sum + item.qty, 0)}</td><td>${money(total)}</td><td><span class="status pending">${escapeHTML(order.status)}</span></td><td><button class="btn" data-order-status="${escapeHTML(order.id)}">Update status</button></td></tr>`;
+  }).join("")}</tbody></table></div><p class="small muted" style="margin-top:12px">These are local demonstration orders, not verified customer transactions.</p>`;
+}
+
+function editProduct(id) {
+  const product = ML.data.products.find(item => item.id === id);
+  if (!product || product.sellerId !== ML.currentUser) return toast("You can edit only listings belonging to your account.", "error");
+
+  ML.editingId = id;
+  $("editProductId").value = id;
+  $("productTitle").value = product.title;
+  $("productCategory").value = product.category;
+  $("productBrand").value = product.brand || "";
+  $("productPrice").value = product.price;
+  $("productOldPrice").value = product.oldPrice || "";
+  $("productStock").value = product.stock;
+  $("productCondition").value = product.condition || "New";
+  $("productSku").value = product.sku || "";
+  $("productBrandLocation").value = product.location || "";
+  $("productDelivery").value = product.delivery || "";
+  $("productDescription").value = product.description || "";
+  ML.pendingImage = null;
+  $("productImage").value = "";
+  $("productImagePreview").textContent = product.imageId ? "Existing product image will be kept unless you choose another." : "No new image selected.";
+  $("productFormTitle").textContent = "Edit your listing.";
+  $("saveProductBtn").textContent = "Save listing changes →";
+  goPage("addproduct");
+}
+
+function resetProductForm() {
+  ML.editingId = null;
+  ML.pendingImage = null;
+  $("productForm").reset();
+  $("editProductId").value = "";
+  $("productStock").value = "1";
+  $("productImagePreview").textContent = "No new image selected.";
+  $("productFormTitle").textContent = "Create a listing.";
+  $("saveProductBtn").textContent = "Publish listing →";
+}
+
+async function handleProductSubmit(event) {
+  event.preventDefault();
+  const user = getUser();
+  if (!user) return openAuth();
+
+  const title = $("productTitle").value.trim();
+  const price = Number($("productPrice").value);
+  const stock = Number($("productStock").value);
+  const description = $("productDescription").value.trim();
+
+  if (!title || !description || !Number.isFinite(price) || price <= 0 || !Number.isInteger(stock) || stock < 0) {
+    return toast("Check the product name, description, price and stock quantity.", "error");
+  }
+
+  let imageId = null;
+  if (ML.pendingImage) {
+    try {
+      imageId = await storeBlob(ML.pendingImage, ML.pendingImage.name);
+    } catch (error) {
+      console.error(error);
+      toast("The image could not be saved because browser storage is unavailable. Try another file or free up device storage.", "error");
+      return;
+    }
+  }
+
+  const old = ML.editingId ? ML.data.products.find(item => item.id === ML.editingId) : null;
+
+  const product = {
+    id: old?.id || uid("product"),
+    title,
+    category: $("productCategory").value,
+    brand: $("productBrand").value.trim(),
+    price,
+    oldPrice: Number($("productOldPrice").value) || 0,
+    stock,
+    condition: $("productCondition").value,
+    sku: $("productSku").value.trim(),
+    location: $("productBrandLocation").value.trim() || user.location || "",
+    delivery: $("productDelivery").value.trim(),
+    description,
+    emoji: old?.emoji || categoryIcon($("productCategory").value),
+    sellerId: user.id,
+    sellerName: user.shopName || user.name,
+    whatsapp: user.whatsapp || "",
+    createdAt: old?.createdAt || Date.now(),
+    imageId: imageId || old?.imageId || null,
+    imageUrl: imageId ? URL.createObjectURL(ML.pendingImage) : old?.imageUrl || "",
+    demo: false
+  };
+
+  if (old) {
+    ML.data.products = ML.data.products.map(item => item.id === old.id ? product : item);
+    toast("Your listing has been updated.", "success");
+  } else {
+    ML.data.products.unshift(product);
+    notify("Listing created", title + " was added to this browser's marketplace.", "📦");
+    toast("Your listing has been created.", "success");
+  }
+
+  ML.pendingImage = null;
+  saveData();
+  resetProductForm();
+  renderAll();
+  goPage("inventory");
+}
+
+function deleteProduct(id) {
+  const product = ML.data.products.find(item => item.id === id);
+  if (!product || product.sellerId !== ML.currentUser) return toast("You can delete only your own listings.", "error");
+
+  showConfirm("Delete this listing?", `This will remove “${product.title}” from this browser's marketplace.`, async () => {
+    ML.data.products = ML.data.products.filter(item => item.id !== id);
+    ML.data.cart = ML.data.cart.filter(item => item.productId !== id);
+    ML.data.wishlist = ML.data.wishlist.filter(item => item !== id);
+    if (product.imageId) await deleteBlob(product.imageId);
+    saveData();
+    renderAll();
+    toast("Listing deleted.");
+  });
+}
+
+function updateStock(id, value) {
+  const product = ML.data.products.find(item => item.id === id);
+  if (!product || product.sellerId !== ML.currentUser) return;
+
+  const stock = Number(value);
+  if (!Number.isInteger(stock) || stock < 0) return toast("Enter a valid non-negative stock quantity.", "error");
+  product.stock = stock;
+  saveData();
+  renderSellerDashboard();
+  renderMarketplace();
+  toast("Stock updated.", "success");
+}
+
+/* ORDERS */
+
+function renderOrders() {
+  const user = getUser();
+  const orders = ML.data.orders.filter(order => order.buyerId === user?.id);
+
+  if (!orders.length) {
+    $("ordersContainer").innerHTML = `<div class="empty-state"><div class="empty-icon">🧾</div><h3>Your order history is empty</h3><p>When you place a demo order, it will appear here.</p><button class="btn btn-primary" data-page="marketplace">Start exploring</button></div>`;
+    $("homeRecentOrders").innerHTML = `<div class="empty-state" style="padding:25px"><p>No orders yet.</p><button class="btn" data-page="marketplace">Browse products</button></div>`;
+    return;
+  }
+
+  const markup = `<div class="table-wrap"><table><thead><tr><th>Order</th><th>Date</th><th>Items</th><th>Total</th><th>Status</th><th></th></tr></thead><tbody>${orders.map(order => `<tr><td><strong>${escapeHTML(order.orderNumber)}</strong></td><td>${new Date(order.createdAt).toLocaleDateString()}</td><td>${order.items.reduce((sum, item) => sum + item.qty, 0)}</td><td>${money(order.total)}</td><td><span class="status pending">${escapeHTML(order.status)}</span></td><td><button class="btn" data-order-details="${escapeHTML(order.id)}">Details</button></td></tr>`).join("")}</tbody></table></div>`;
+  $("ordersContainer").innerHTML = markup;
+  $("homeRecentOrders").innerHTML = markup;
+}
+
+function showOrderDetails(id) {
+  const order = ML.data.orders.find(item => item.id === id);
+  if (!order) return;
+
+  $("genericModalTitle").textContent = "Order " + order.orderNumber;
+  $("genericModalBody").innerHTML = `
+    <p class="muted small">${new Date(order.createdAt).toLocaleString()}</p>
+    <div style="display:grid;gap:12px;margin:18px 0">${order.items.map(item => `<div class="attachment-row"><div><strong>${escapeHTML(item.title)}</strong><small>${item.qty} × ${money(item.price)}</small></div><strong>${money(item.qty * item.price)}</strong></div>`).join("")}</div>
+    <div class="summary-row"><span>Subtotal</span><strong>${money(order.subtotal)}</strong></div>
+    <div class="summary-row"><span>Delivery estimate</span><strong>${money(order.delivery)}</strong></div>
+    <div class="summary-row"><span>Tax estimate</span><strong>${money(order.tax)}</strong></div>
+    <div class="summary-row summary-total"><span>Total</span><strong>${money(order.total)}</strong></div>
+    <p class="small muted" style="margin-top:15px">Demo order only. No payment was processed and delivery is not tracked by this prototype.</p>
+  `;
+  $("genericModal").classList.add("open");
+}
+
+function updateOrderStatus(id) {
+  const order = ML.data.orders.find(item => item.id === id);
+  if (!order) return;
+  const statuses = ["Pending confirmation", "Confirmed (demo)", "Processing (demo)", "Completed (demo)", "Cancelled (demo)"];
+  const currentIndex = statuses.indexOf(order.status);
+  const next = statuses[(currentIndex + 1) % statuses.length];
+
+  showConfirm("Update order status?", `Change ${order.orderNumber} to “${next}”? This is a local demonstration update.`, () => {
+    order.status = next;
+    saveData();
+    renderAll();
+    toast("Demo order status updated.", "success");
+  });
+}
+
+/* PROFILE & ATTACHMENTS */
+
+function renderAvatar(element, user, large = false) {
+  if (!element) return;
+  if (user?.photoUrl) {
+    element.innerHTML = `<img src="${escapeHTML(user.photoUrl)}" alt="${escapeHTML(user.name)} profile picture">`;
+  } else {
+    element.textContent = initials(user?.name || "Market Link");
+  }
+}
+
+function renderProfile() {
+  const user = getUser();
+  $("topUserName").textContent = user?.name || "Guest";
+  $("topUserRole").textContent = user?.role === "seller" ? "Seller account" : user ? "Buyer account" : "Marketplace visitor";
+  renderAvatar($("topAvatar"), user);
+  renderAvatar($("profilePicture"), user, true);
+
+  $("profileCardName").textContent = user?.name || "Guest";
+  $("profileCardEmail").textContent = user?.email || "Not signed in";
+  $("profileCardRole").textContent = user ? (user.role === "seller" ? "Seller account" : "Buyer account") : "Marketplace visitor";
+
+  const fields = {
+    profileName: user?.name || "",
+    profileEmail: user?.email || "",
+    profilePhone: user?.phone || "",
+    profileWhatsApp: user?.whatsapp || "",
+    profileLocation: user?.location || "",
+    profileWebsite: user?.website || "",
+    profileBio: user?.bio || "",
+    profileShopName: user?.shopName || "",
+    profileShopType: user?.shopType || "Individual seller"
+  };
+
+  Object.entries(fields).forEach(([id, value]) => {
+    if ($(id) && document.activeElement !== $(id)) $(id).value = value;
+  });
+}
+
+async function handleProfilePhoto(file) {
+  const user = getUser();
+  if (!user || !file) return;
+  if (!file.type.startsWith("image/")) return toast("Choose an image file.", "error");
+
+  try {
+    const id = await storeBlob(file, file.name);
+    if (user.photoId) await deleteBlob(user.photoId);
+    user.photoId = id;
+    user.photoUrl = URL.createObjectURL(file);
+    saveData();
+    renderProfile();
+    toast("Profile photo updated.", "success");
+  } catch (error) {
+    console.error(error);
+    toast("The photo could not be saved. Check browser/device storage and try again.", "error");
+  }
+}
+
+function saveProfile(event) {
+  event.preventDefault();
+  const user = getUser();
+  if (!user) return openAuth();
+
+  const email = $("profileEmail").value.trim().toLowerCase();
+  if (email && ML.data.users.some(other => other.id !== user.id && other.email.toLowerCase() === email)) {
+    return toast("Another local account already uses that email.", "error");
+  }
+
+  user.name = $("profileName").value.trim();
+  user.email = email;
+  user.phone = $("profilePhone").value.trim();
+  user.whatsapp = normalizePhone($("profileWhatsApp").value);
+  user.location = $("profileLocation").value.trim();
+  user.website = $("profileWebsite").value.trim();
+  user.bio = $("profileBio").value.trim();
+  user.shopName = $("profileShopName").value.trim();
+  user.shopType = $("profileShopType").value;
+
+  saveData();
+  renderAll();
+  toast("Your profile has been saved.", "success");
+}
+
+function saveShopDetails() {
+  const user = getUser();
+  if (!user) return openAuth();
+  user.shopName = $("profileShopName").value.trim();
+  user.shopType = $("profileShopType").value;
+  saveData();
+  renderAll();
+  toast("Seller details saved.", "success");
+}
+
+async function uploadAttachments(fileList) {
+  const user = getUser();
+  if (!user) {
+    openAuth();
+    return toast("Log in before attaching files.", "error");
+  }
+
+  const files = Array.from(fileList || []);
+  for (const file of files) {
+    try {
+      const mediaId = await storeBlob(file, file.name);
+      ML.data.attachments.unshift({
+        id: uid("attachment"),
+        mediaId,
+        name: file.name,
+        type: file.type || "application/octet-stream",
+        size: file.size,
+        ownerId: user.id,
+        createdAt: Date.now()
+      });
+    } catch (error) {
+      console.error(error);
+      toast("Could not save " + file.name + ". Browser/device storage may be unavailable.", "error");
+    }
+  }
+
+  saveData();
+  renderAttachments();
+  toast("File processing finished.", "success");
+}
+
+function renderAttachments() {
+  const user = getUser();
+  const files = ML.data.attachments.filter(file => file.ownerId === user?.id);
+
+  if (!files.length) {
+    $("attachmentList").innerHTML = `<div class="empty-state"><div class="empty-icon">📁</div><h3>No attachments yet</h3><p>Files you attach will appear here.</p></div>`;
+    return;
+  }
+
+  $("attachmentList").innerHTML = files.map(file => `
+    <div class="attachment-row">
+      <div style="display:flex;align-items:center;gap:12px;min-width:0">
+        <div class="notification-icon">▤</div>
+        <div style="min-width:0"><strong>${escapeHTML(file.name)}</strong><small>${escapeHTML(file.type)} · ${formatBytes(file.size)} · ${new Date(file.createdAt).toLocaleDateString()}</small></div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        <button class="icon-btn" data-download-attachment="${escapeHTML(file.id)}" title="Download"><svg><use href="#i-download"/></svg></button>
+        <button class="icon-btn" data-delete-attachment="${escapeHTML(file.id)}" title="Delete"><svg><use href="#i-trash"/></svg></button>
+      </div>
+    </div>
+  `).join("");
+}
+
+async function downloadAttachment(id) {
+  const file = ML.data.attachments.find(item => item.id === id);
+  if (!file) return;
+  const record = await getBlob(file.mediaId);
+  if (!record?.blob) return toast("The stored file could not be found.", "error");
+
+  const url = URL.createObjectURL(record.blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = file.name;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+async function deleteAttachment(id) {
+  const file = ML.data.attachments.find(item => item.id === id);
+  if (!file || file.ownerId !== ML.currentUser) return;
+
+  showConfirm("Delete this attachment?", "This removes the stored file from this browser.", async () => {
+    await deleteBlob(file.mediaId);
+    ML.data.attachments = ML.data.attachments.filter(item => item.id !== id);
+    saveData();
+    renderAttachments();
+    toast("Attachment deleted.");
+  });
+}
+
+/* WHATSAPP */
+
+function normalizePhone(value = "") {
+  let phone = String(value).trim().replace(/[^\d+]/g, "");
+  if (!phone) return "";
+  if (phone.startsWith("00")) phone = "+" + phone.slice(2);
+  if (phone.startsWith("0") && !phone.startsWith("00")) phone = "+233" + phone.slice(1);
+  return phone.replace(/\D/g, "");
+}
+
+function openWhatsApp(phone, message) {
+  const number = normalizePhone(phone);
+  if (!number || number.length < 8) {
+    toast("This seller has not provided a valid WhatsApp number. Ask them to update their profile.", "error");
+    return;
+  }
+
+  const url = "https://wa.me/" + number + "?text=" + encodeURIComponent(message);
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
+function contactSeller(id, restock = false) {
+  const product = ML.data.products.find(item => item.id === id);
+  if (!product) return;
+  const seller = product.sellerId
+    ? ML.data.users.find(user => user.id === product.sellerId)
+    : null;
+  const phone = seller?.whatsapp || product.whatsapp || "";
+  const user = getUser();
+  const buyerName = user?.name || "A marketplace visitor";
+
+  const message = restock
+    ? `Hello ${seller?.name || product.sellerName || "seller"}, I'm ${buyerName}. I'm interested in "${product.title}" (${money(product.price)}). It appears to be out of stock. Could you please let me know whether it will be restocked and when?`
+    : `Hello ${seller?.name || product.sellerName || "seller"}, I'm ${buyerName}. I'm interested in "${product.title}" listed for ${money(product.price)}. Could you please confirm availability, product details, and delivery options?`;
+
+  openWhatsApp(phone, message);
+}
+
+function setupMessaging() {
+  const toggle = $("messageToggle");
+  const panel = $("messagePanel");
+
+  function setOpen(open) {
+    panel.classList.toggle("open", open);
+    panel.setAttribute("aria-hidden", String(!open));
+    toggle.setAttribute("aria-expanded", String(open));
+    if (open) setTimeout(() => $("messageName").focus(), 100);
+  }
+
+  toggle.addEventListener("click", () => setOpen(!panel.classList.contains("open")));
+  $("messageClose").addEventListener("click", () => setOpen(false));
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+      setOpen(false);
+      document.querySelectorAll(".modal-backdrop.open").forEach(modal => modal.classList.remove("open"));
+    }
+  });
+
+  document.addEventListener("click", event => {
+    if (panel.classList.contains("open") &&
+        !panel.contains(event.target) && !toggle.contains(event.target)) {
+      setOpen(false);
+    }
+  });
+
+  $("messageForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const name = $("messageName").value.trim();
+    const email = $("messageEmail").value.trim();
+    const message = $("messageText").value.trim();
+
+    if (!name || !message) return toast("Enter your name and message.", "error");
+
+    const body = [
+      "Hello Market Link!",
+      "",
+      "Name: " + name,
+      email ? "Email: " + email : "",
+      "",
+      "Message:",
+      message
+    ].filter(Boolean).join("\n");
+
+    // Market Link owner WhatsApp, normalized to Ghana international format.
+    openWhatsApp("0203446793", body);
+  });
+}
+
+/* NOTIFICATIONS */
+
+function renderNotifications() {
+  const notes = ML.data.notifications;
+  const unread = notes.filter(note => !note.read).length;
+
+  if (!notes.length) {
+    $("notificationList").innerHTML = `<div class="empty-state"><div class="empty-icon">🔔</div><h3>All quiet for now</h3><p>Updates from this local prototype will appear here.</p></div>`;
+    return;
+  }
+
+  $("notificationList").innerHTML = notes.map(note => `
+    <article class="notification-item" style="${note.read ? "opacity:.7" : ""}">
+      <div class="notification-icon">${escapeHTML(note.icon || "✦")}</div>
+      <div><strong>${escapeHTML(note.title)}</strong><p>${escapeHTML(note.message)}</p><p>${new Date(note.createdAt).toLocaleString()}</p></div>
+    </article>
+  `).join("");
+}
+
+function updateBadges() {
+  $("cartBadge").textContent = cartQuantity();
+  $("wishBadge").textContent = ML.data.wishlist.length;
+  const unread = ML.data.notifications.filter(note => !note.read).length;
+  $("notificationBadge").textContent = unread;
+  $("topNotificationBadge").textContent = unread;
+  $("topNotificationBadge").classList.toggle("hidden", unread === 0);
+  $("homeProductsCount").textContent = ML.data.products.length;
+  $("homeCartCount").textContent = cartQuantity();
+  $("homeWishlistCount").textContent = ML.data.wishlist.length;
+  const user = getUser();
+  $("homeOrdersCount").textContent = ML.data.orders.filter(order => order.buyerId === user?.id).length;
+}
+
+/* THEME & PREFERENCES */
+
+function setTheme(theme) {
+  ML.data.preferences.theme = theme;
+  document.body.classList.toggle("dark", theme === "dark");
+  saveData();
+}
+
+function savePreferences() {
+  ML.data.preferences.currency = $("currencyPreference").value;
+  ML.data.preferences.defaultSort = $("defaultSort").value;
+  $("sortProducts").value = ML.data.preferences.defaultSort;
+  saveData();
+  renderAll();
+  toast("Preferences saved.", "success");
+}
+
+/* MODAL HELPERS */
+
+function showConfirm(title, message, onConfirm) {
+  $("genericModalTitle").textContent = title;
+  $("genericModalBody").innerHTML = `
+    <p style="line-height:1.8;color:var(--muted)">${escapeHTML(message)}</p>
+    <div class="form-footer" style="margin-top:22px">
+      <button class="btn" data-close-modal="genericModal">Cancel</button>
+      <button class="btn btn-primary" id="confirmActionBtn">Confirm</button>
+    </div>
+  `;
+  $("genericModal").classList.add("open");
+  $("confirmActionBtn").addEventListener("click", async () => {
+    closeModal("genericModal");
+    await onConfirm();
+  }, { once: true });
+}
+
+/* EXPORT / CLEAR */
+
+function exportData() {
+  const payload = {
+    exportedAt: new Date().toISOString(),
+    note: "Market Link browser prototype export. Binary images and attachments are not included.",
+    data: ML.data
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "market-link-data-export.json";
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  toast("Data export prepared.", "success");
+}
+
+function clearLocalData() {
+  showConfirm("Clear all local marketplace data?", "This deletes local accounts, listings, orders, and saved marketplace information from this browser. This action cannot be undone.", async () => {
+    try {
+      localStorage.removeItem(ML.key);
+      if (ML.db) {
+        await new Promise(resolve => {
+          const transaction = ML.db.transaction("media", "readwrite");
+          transaction.objectStore("media").clear();
+          transaction.oncomplete = resolve;
+          transaction.onerror = resolve;
+        });
+      }
+      ML.currentUser = null;
+      ML.data = defaultData();
+      saveData();
+      renderAll();
+      openAuth();
+      toast("Local marketplace data cleared.", "success");
+    } catch (error) {
+      toast("Could not clear all local data.", "error");
+    }
+  });
+}
+
+/* PAGE RENDERING */
+
+function renderHome() {
+  renderCategories();
+  renderHomeProducts();
+  renderOrders();
+}
+
+function renderPage(page) {
+  switch (page) {
+    case "home":
+      renderHome();
+      break;
+    case "marketplace":
+      renderMarketplace();
+      break;
+    case "categories":
+      renderCategories();
+      renderCategoryProducts();
+      break;
+    case "wishlist":
+      renderWishlist();
+      break;
+    case "cart":
+      renderCart();
+      break;
+    case "orders":
+      renderOrders();
+      break;
+    case "seller":
+      renderSellerDashboard();
+      break;
+    case "inventory":
+      renderInventory();
+      break;
+    case "sellerorders":
+      renderSellerOrders();
+      break;
+    case "profile":
+      renderProfile();
+      break;
+    case "attachments":
+      renderAttachments();
+      break;
+    case "notifications":
+      renderNotifications();
+      break;
+  }
+}
+
+function renderAll() {
+  setTheme(ML.data.preferences.theme || "light");
+  renderCategories();
+  renderHomeProducts();
+  renderMarketplace();
+  renderCategoryProducts();
+  renderWishlist();
+  renderCart();
+  renderOrders();
+  renderSellerDashboard();
+  renderInventory();
+  renderSellerOrders();
+  renderProfile();
+  renderAttachments();
+  renderNotifications();
+  updateBadges();
+  $("currencyPreference").value = ML.data.preferences.currency || "GHS";
+  $("defaultSort").value = ML.data.preferences.defaultSort || "featured";
+}
+
+/* EVENT DELEGATION */
+
+document.addEventListener("click", event => {
+  const pageButton = event.target.closest("[data-page]");
+  if (pageButton) {
+    event.preventDefault();
+    goPage(pageButton.dataset.page);
+    return;
+  }
+
+  const categoryButton = event.target.closest("[data-category]");
+  if (categoryButton) {
+    selectCategory(categoryButton.dataset.category);
+    return;
+  }
+
+  const openProductButton = event.target.closest("[data-open-product]");
+  if (openProductButton) {
+    openProduct(openProductButton.dataset.openProduct);
+    return;
+  }
+
+  const wishlistButton = event.target.closest("[data-wishlist]");
+  if (wishlistButton) {
+    event.preventDefault();
+    event.stopPropagation();
+    toggleWishlist(wishlistButton.dataset.wishlist);
+    return;
+  }
+
+  const productAction = event.target.closest("[data-product-action]");
+  if (productAction) {
+    const id = productAction.dataset.productId;
+    if (productAction.dataset.productAction === "cart") addToCart(id);
+    else contactSeller(id, true);
+    return;
+  }
+
+  const contactButton = event.target.closest("[data-contact-seller]");
+  if (contactButton) {
+    contactSeller(contactButton.dataset.contactSeller, false);
+    return;
+  }
+
+  const qtyButton = event.target.closest("[data-qty]");
+  if (qtyButton) {
+    changeCartQty(qtyButton.dataset.productId, Number(qtyButton.dataset.qty));
+    return;
+  }
+
+  const removeCart = event.target.closest("[data-remove-cart]");
+  if (removeCart) {
+    ML.data.cart = ML.data.cart.filter(item => item.productId !== removeCart.dataset.removeCart);
+    saveData();
+    renderAll();
+    toast("Item removed from your cart.");
+    return;
+  }
+
+  const editButton = event.target.closest("[data-edit-product]");
+  if (editButton) {
+    editProduct(editButton.dataset.editProduct);
+    return;
+  }
+
+  const deleteButton = event.target.closest("[data-delete-product]");
+  if (deleteButton) {
+    deleteProduct(deleteButton.dataset.deleteProduct);
+    return;
+  }
+
+  const orderDetails = event.target.closest("[data-order-details]");
+  if (orderDetails) {
+    showOrderDetails(orderDetails.dataset.orderDetails);
+    return;
+  }
+
+  const orderStatus = event.target.closest("[data-order-status]");
+  if (orderStatus) {
+    updateOrderStatus(orderStatus.dataset.orderStatus);
+    return;
+  }
+
+  const downloadButton = event.target.closest("[data-download-attachment]");
+  if (downloadButton) {
+    downloadAttachment(downloadButton.dataset.downloadAttachment);
+    return;
+  }
+
+  const deleteAttachmentButton = event.target.closest("[data-delete-attachment]");
+  if (deleteAttachmentButton) {
+    deleteAttachment(deleteAttachmentButton.dataset.deleteAttachment);
+    return;
+  }
+
+  const closeButton = event.target.closest("[data-close-modal]");
+  if (closeButton) {
+    closeModal(closeButton.dataset.closeModal);
+  }
+});
+
+/* SEARCH & INPUTS */
+
+$("globalSearch").addEventListener("input", event => {
+  ML.searchTerm = event.target.value;
+  renderMarketplace();
+  renderHomeProducts();
+  if (ML.activePage !== "marketplace" && ML.activePage !== "home") {
+    goPage("marketplace");
+  }
+});
+
+$("sortProducts").addEventListener("change", renderMarketplace);
+$("inventorySearch").addEventListener("input", renderInventory);
+$("inventoryFilter").addEventListener("change", renderInventory);
+
+$("productImage").addEventListener("change", event => {
+  ML.pendingImage = event.target.files?.[0] || null;
+  $("productImagePreview").textContent = ML.pendingImage
+    ? ML.pendingImage.name + " · " + formatBytes(ML.pendingImage.size)
+    : "No new image selected.";
+});
+
+$("profilePhotoInput").addEventListener("change", async event => {
+  const file = event.target.files?.[0];
+  await handleProfilePhoto(file);
+  event.target.value = "";
+});
+
+$("attachmentInput").addEventListener("change", async event => {
+  await uploadAttachments(event.target.files);
+  event.target.value = "";
+});
+
+$("productForm").addEventListener("submit", handleProductSubmit);
+$("cancelProductEdit").addEventListener("click", resetProductForm);
+$("profileForm").addEventListener("submit", saveProfile);
+$("saveShopDetails").addEventListener("click", saveShopDetails);
+$("authForm").addEventListener("submit", handleAuth);
+$("checkoutBtn").addEventListener("click", checkout);
+$("logoutBtn").addEventListener("click", logout);
+$("exportDataBtn").addEventListener("click", exportData);
+$("clearDataBtn").addEventListener("click", clearLocalData);
+$("savePreferences").addEventListener("click", savePreferences);
+
+$("chooseProfilePhoto").addEventListener("click", () => {
+  if (!getUser()) return openAuth();
+  $("profilePhotoInput").click();
+});
+
+$("removeProfilePhoto").addEventListener("click", async () => {
+  const user = getUser();
+  if (!user?.photoId) return toast("You have no profile photo to remove.");
+  await deleteBlob(user.photoId);
+  user.photoId = null;
+  user.photoUrl = "";
+  saveData();
+  renderProfile();
+  toast("Profile photo removed.");
+});
+
+$("themeToggle").addEventListener("click", () => {
+  setTheme(document.body.classList.contains("dark") ? "light" : "dark");
+});
+
+$("lightModeBtn").addEventListener("click", () => {
+  setTheme("light");
+  toast("Light mode enabled.");
+});
+
+$("darkModeBtn").addEventListener("click", () => {
+  setTheme("dark");
+  toast("Dark mode enabled.");
+});
+
+$("markNotificationsRead").addEventListener("click", () => {
+  ML.data.notifications.forEach(note => note.read = true);
+  saveData();
+  renderNotifications();
+  updateBadges();
+  toast("Notifications marked as read.");
+});
+
+$("menuToggle").addEventListener("click", () => $("sidebar").classList.toggle("open"));
+
+document.querySelectorAll("[data-auth-mode]").forEach(button => {
+  button.addEventListener("click", () => setAuthMode(button.dataset.authMode));
+});
+
+document.querySelectorAll(".auth-role").forEach(button => {
+  button.addEventListener("click", () => setAuthRole(button.dataset.role));
+});
+
+document.querySelectorAll(".modal-backdrop").forEach(backdrop => {
+  backdrop.addEventListener("click", event => {
+    if (event.target === backdrop) backdrop.classList.remove("open");
+  });
+});
+
+$("sortProducts").value = "featured";
+
+/* INITIALIZE */
+
+async function initMarketLink() {
+  ML.data = loadData();
+  ML.currentUser = ML.data.sessions?.userId || null;
+
+  try {
+    ML.db = await openMediaDB();
+    await hydrateImages();
+  } catch (error) {
+    console.warn("File storage is unavailable:", error);
+    toast("Browser file storage is unavailable. Some image and attachment features may not work.", "error");
+  }
+
+  // Start with all categories visible and restore the saved display preference.
+  ML.selectedCategory = "All products";
+  $("sortProducts").value = ML.data.preferences.defaultSort || "featured";
+  setupMessaging();
+  renderAll();
+
+  const validSession = ML.currentUser && getUser();
+  if (!validSession) {
+    ML.currentUser = null;
+    ML.data.sessions.userId = null;
+    saveData();
+    openAuth();
+  } else {
+    closeAuth();
+  }
+}
+
+initMarketLink();
+</script>
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", async () => {
+      try {
+        await navigator.serviceWorker.register("./sw.js");
+        console.log("Market Link service worker registered.");
+      } catch (error) {
+        console.error(
+          "Market Link service worker registration failed:",
+          error
+        );
+      }
+    });
+  }
+</script>
+</body>
+</html>
