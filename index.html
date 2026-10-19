@@ -2297,6 +2297,35 @@ tbody tr:last-child td {
   .message-panel { right: 10px; bottom: 137px; width: calc(100vw - 20px); }
 }
 
+  /* Support portrait and landscape orientations */
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+img,
+video,
+iframe {
+  max-width: 100%;
+}
+
+@media screen and (orientation: portrait) {
+  /* Keep your existing portrait layout */
+}
+
+@media screen and (orientation: landscape) {
+  /* Allow the layout to adapt to landscape */
+  body {
+    min-height: 100vh;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: .01ms !important;
