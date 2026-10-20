@@ -28,6 +28,7 @@ Discover products. Connect with sellers. Trade with confidence.
 
 A modern marketplace experience designed to bring buyers and sellers closer together.
 
+<div align="center">
 <br/><a href="https://github.com/junior-pobee">
 <img src="https://img.shields.io/badge/BUILT%20BY-EMMANUEL%20POBEE-0B7A46?style=for-the-badge&logo=github&logoColor=white" alt="Built by Emmanuel Pobee"/>
 </a><img src="https://img.shields.io/badge/PLATFORM-WEB%20APP-101810?style=for-the-badge&logo=googlechrome&logoColor=34D399" alt="Web application"/><img src="https://img.shields.io/badge/DESIGN-PREMIUM-064E3B?style=for-the-badge&logo=figma&logoColor=FFFFFF" alt="Premium design"/><br/><br/>
