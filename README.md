@@ -180,18 +180,22 @@ GOOD EXPERIENCES CONNECT.
 GOOD IDEAS CREATE OPPORTUNITIES.
 
 <br/>Market Link — Connecting people to possibilities.
-<hr>Preview<br>
+
+---
+
 <div align="center">
 
-<img
-  src="./Screenshot_20261019-044755.png"
-  alt="Market Link app preview"
-  width="370"
-  height="320"
->
+## ✦ MARKET LINK PREVIEW ✦
+
+*Discover. Connect. Trade.*
+
+<br>
+
+![Market Link App Preview](Screenshot_20261019-044755.png)
 
 </div>
-<hr>
+
+---
 
 <br/><img src="https://capsule-render.vercel.app/api?type=waving&color=0:20C878,50:087443,100:061A12&height=130&section=footer" width="100%" alt="Green wave footer"/><sub>Designed with intention by <b>Emmanuel Pobee</b> · Market Link</sub>
 
