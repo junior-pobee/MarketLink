@@ -157,7 +157,7 @@ Step 03 — Open the application
 
 ---
 
-<div align="center">"07" — THE DEVELOPER
+<div align="center">"07" — THE DEVELOPER <br>
 
 <img src="https://img.shields.io/badge/DEVELOPER-EMMANUEL%20POBEE-064E3B?style=for-the-badge&logo=github&logoColor=white" alt="Developer Emmanuel Pobee"/>
 
