@@ -115,7 +115,7 @@ A palette inspired by growth.
 </table><div align="center">Dark foundations. Confident emeralds. Bright accents.
 
 </div>---
-
+<hr>
 <div align="center">"04" — TECHNOLOGY & STRUCTURE
 
 </div><div align="center"><img src="https://img.shields.io/badge/HTML5-STRUCTURE-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5"/>
