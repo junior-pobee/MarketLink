@@ -90,7 +90,7 @@ An emerald-inspired visual identity that communicates freshness, growth, opportu
 
 A palette inspired by growth.
 
-</div><table>
+</div><table><div align="center">
 <tr>
 <td align="center" width="25%"><img src="https://singlecolorimage.com/get/061A12/90x90" width="65" alt="Deep forest green"/>Forest Black
 
