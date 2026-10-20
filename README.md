@@ -120,7 +120,7 @@ A palette inspired by growth.
 
 </div><div align="center"><img src="https://img.shields.io/badge/HTML5-STRUCTURE-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5"/>
 <img src="https://img.shields.io/badge/CSS3-STYLING-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3"/>
-<img src="https://img.shields.io/badge/JAVASCRIPT-INTERACTIVITY-F7DF1E?style=for-the-badge&logo=javascript&logoColor=111111" alt="JavaScript"/></div>Market Link's frontend is built around the core technologies of modern web development.
+<img src="https://img.shields.io/badge/JAVASCRIPT-INTERACTIVITY-F7DF1E?style=for-the-badge&logo=javascript&logoColor=111111" alt="JavaScript"/></div></div>Market Link's frontend is built around the core technologies of modern web development.
 
 Technology| Purpose
 HTML5| Page structure and content
