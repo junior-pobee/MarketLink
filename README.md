@@ -1,4 +1,30 @@
- <div align="center"><img src="https://capsule-render.vercel.app/api?type=venom&height=260&color=0:061A12,40:087443,100:20C878&text=MARKET%20LINK&fontColor=FFFFFF&fontSize=58&fontAlignY=43&desc=DISCOVER.%20CONNECT.%20TRADE.&descSize=16&descAlignY=62&animation=fadeIn&stroke=20C878&strokeWidth=1" width="100%" alt="Market Link banner"/><br/>◈ Your Marketplace. Your Connections. Your Opportunities. ◈
+<div align="center">
+
+<img src="./logo.png" width="100" alt="MarketLink Logo"/>
+
+<br/>
+
+# MARKET LINK
+
+### Your Marketplace. Your Connections. Your Opportunities.
+
+<br/>
+
+Discover products. Connect with sellers. Trade with confidence.
+
+<br/>
+
+<img src="https://capsule-render.vercel.app/api?type=rect&height=3&color=20C878" width="80%" alt="Green divider"/>
+
+<br/>
+
+**DISCOVER** &nbsp; · &nbsp; **CONNECT** &nbsp; · &nbsp; **TRADE**
+
+<br/>
+
+</div>
+
+---
 
 A modern marketplace experience designed to bring buyers and sellers closer together.
 
