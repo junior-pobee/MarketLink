@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./logo.png" width="100" alt="MarketLink Logo"/>
+<img src="./icon-512.png" width="100" alt="MarketLink Logo"/>
 
 <br/>
 
