@@ -181,7 +181,7 @@ GOOD IDEAS CREATE OPPORTUNITIES.
 
 <br/>Market Link — Connecting people to possibilities.
 <hr>Preview<br>
-<img src="screenshot_20261019-044755.png height="320" width="370">
+<img src="Screenshot_20261019-044755.png height="320" width="370">
 <hr>
 
 <br/><img src="https://capsule-render.vercel.app/api?type=waving&color=0:20C878,50:087443,100:061A12&height=130&section=footer" width="100%" alt="Green wave footer"/><sub>Designed with intention by <b>Emmanuel Pobee</b> · Market Link</sub>
