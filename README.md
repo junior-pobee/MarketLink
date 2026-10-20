@@ -149,7 +149,7 @@ Step 03 — Open the application
 
 ---
 
-<div align="center">"06" — PROJECT STATUS
+<div align="center">"06" — PROJECT STATUS <br>
 
 <img src="https://img.shields.io/badge/PROJECT-MARKET%20LINK-087443?style=for-the-badge&logo=leaflet&logoColor=white" alt="Market Link project"/>
 <img src="https://img.shields.io/badge/FOCUS-DIGITAL%20MARKETPLACE-061A12?style=for-the-badge" alt="Digital marketplace"/>
