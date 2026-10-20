@@ -145,9 +145,7 @@ cd MarketLink
 
 Step 03 — Open the application
 
-If your project uses a standalone "index.html", open it in your browser or launch it using the Live Server extension in Visual Studio Code.
 
-«Replace the repository URL above if your actual GitHub repository has a different name or location.»
 
 ---
 
