@@ -829,13 +829,75 @@ body.dark .nav-item.active {
   background: color-mix(in srgb, var(--accent) 13%, var(--surface));
 }
 
-.category-icon {
-  font-size: 25px;
+.category-glyph {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  color: var(--muted, #777);
+  stroke-width: 1.7;
+  transition: color .2s;
+}
+
+.category-card:hover .category-glyph,
+.category-card.selected .category-glyph {
+  color: var(--text);
 }
 
 .category-card strong {
   font-size: 12px;
+  color: var(--text);
 }
+
+.category-fallback {
+  width: 46%;
+  height: 46%;
+  min-width: 18px;
+  max-width: 90px;
+  margin: auto;
+  display: block;
+  color: var(--muted, #8a8a8a);
+  stroke-width: 1.4;
+}
+
+/* DELIVERY LOCATION (GOOGLE MAPS) */
+
+.delivery-box {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.delivery-box h4 { margin: 0; font-size: 14px; }
+
+.delivery-box input,
+.delivery-box textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+}
+
+.delivery-box label { font-size: 12px; font-weight: 600; display: grid; gap: 5px; }
+
+.map-frame {
+  width: 100%;
+  height: 190px;
+  border: 0;
+  border-radius: 12px;
+  background: #e7e7e7;
+}
+
+.map-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.map-actions .btn { flex: 1 1 auto; font-size: 12px; text-align: center; }
+.map-status { font-size: 12px; color: var(--muted, #777); }
 
 /* PRODUCT GRID */
 
@@ -2254,7 +2316,7 @@ tbody tr:last-child td {
   }
 
   .category-card { min-height: 95px; padding: 11px; border-radius: 14px; }
-  .category-icon { font-size: 21px; }
+  .category-glyph { width: 22px; height: 22px; }
   .category-card strong { font-size: 10px; }
 
   .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
@@ -2385,6 +2447,27 @@ iframe {
 
 <body>
 <svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+  <symbol id="c-electronics" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/></symbol>
+  <symbol id="c-computers" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="11" rx="2"/><path d="M2 20h20"/></symbol>
+  <symbol id="c-fashion" viewBox="0 0 24 24"><path d="M8 3 3 6l2 4 3-1.5V21h8V8.5L19 10l2-4-5-3a4 4 0 0 1-8 0Z"/></symbol>
+  <symbol id="c-shoes" viewBox="0 0 24 24"><path d="M3 16V8.5l4 3 3-2 3 3c2 1 6 .8 8 3V17H3Z"/><path d="M3 20h18"/></symbol>
+  <symbol id="c-beauty" viewBox="0 0 24 24"><rect x="8" y="13" width="8" height="8" rx="1.5"/><rect x="9.5" y="9" width="5" height="4"/><path d="m10 9 1-5 3 1-.5 4"/></symbol>
+  <symbol id="c-home" viewBox="0 0 24 24"><path d="M5 11V8a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v3"/><path d="M3 13a2 2 0 0 1 4 0v2h10v-2a2 2 0 0 1 4 0v5H3v-5Z"/><path d="M6 18v2M18 18v2"/></symbol>
+  <symbol id="c-food" viewBox="0 0 24 24"><path d="M3 10h18l-2 10H5L3 10Z"/><path d="m8 10 3-6M16 10l-3-6"/></symbol>
+  <symbol id="c-books" viewBox="0 0 24 24"><path d="M4 4h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4V4Z"/><path d="M20 4h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6V4Z"/></symbol>
+  <symbol id="c-gaming" viewBox="0 0 24 24"><path d="M7 8h10a5 5 0 0 1 5 5v1a3 3 0 0 1-5.2 2l-1.3-1.5h-5L8.2 16A3 3 0 0 1 3 14v-1a5 5 0 0 1 4-5Z"/><path d="M8 10.5v3M6.5 12h3"/><circle cx="16" cy="11.5" r=".6"/><circle cx="18" cy="13.5" r=".6"/></symbol>
+  <symbol id="c-sports" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M5.5 5.5c3 3 3 10 0 13M18.5 5.5c-3 3-3 10 0 13"/></symbol>
+  <symbol id="c-jewellery" viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9l4-6Z"/><path d="M2 9h20M9 3 7 9l5 12 5-12-2-6"/></symbol>
+  <symbol id="c-toys" viewBox="0 0 24 24"><circle cx="12" cy="13" r="6"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="6.5" r="2.5"/><path d="M10 12v.01M14 12v.01M11 15h2"/></symbol>
+  <symbol id="c-auto" viewBox="0 0 24 24"><path d="M5 17H3v-5l2-5.5A2 2 0 0 1 7 5h10a2 2 0 0 1 2 1.5L21 12v5h-2"/><path d="M5 12h14M9 17h6"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></symbol>
+  <symbol id="c-tools" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5 5L3 18l3 3 6.7-6.7a4 4 0 0 0 5-5l-2.5 2.5-2.4-.6-.6-2.4 2.5-2.5Z"/></symbol>
+  <symbol id="c-digital" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4M10 9l-2 2 2 2M14 9l2 2-2 2"/></symbol>
+  <symbol id="c-services" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></symbol>
+  <symbol id="c-office" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6"/></symbol>
+  <symbol id="c-agri" viewBox="0 0 24 24"><path d="M12 21V11M8 21h8"/><path d="M12 11C12 7 9 5 5 5c0 4 2 6 7 6Z"/><path d="M12 14c0-3 2.5-5 7-5 0 4-2.5 6-7 5Z"/></symbol>
+  <symbol id="c-art" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1.5 0 2-1 1.5-2-.6-1.2.2-2.5 1.6-2.5H17a4 4 0 0 0 4-4C21 6.5 17 3 12 3Z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7.5" r="1"/></symbol>
+  <symbol id="c-other" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="M3 8v9l9 5 9-5V8M12 13v9"/></symbol>
+  <symbol id="c-all" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></symbol>
   <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9M9 21v-7h6v7"/></symbol>
   <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="7.2"/><path d="m16 16 5 5"/></symbol>
@@ -2588,6 +2671,25 @@ iframe {
           <div class="summary-row"><span>Tax</span><strong id="cartTax">GH₵0.00</strong></div>
           <div class="summary-row summary-total"><span>Total</span><strong id="cartTotal">GH₵0.00</strong></div>
           <p class="small muted" style="margin:12px 0">Prices are shown in Ghana cedis for this local prototype.</p>
+
+          <div class="delivery-box" id="deliveryBox">
+            <h4>Delivery location</h4>
+            <label>Phone number for the rider
+              <input id="dropPhone" type="tel" inputmode="tel" placeholder="e.g. 024 000 0000" maxlength="20">
+            </label>
+            <label>Address or landmark
+              <input id="dropAddress" placeholder="e.g. Near Madina Market, Accra" maxlength="200">
+            </label>
+            <label>Extra directions (optional)
+              <textarea id="dropNotes" rows="2" maxlength="200" placeholder="e.g. Blue gate, second house after the pharmacy"></textarea>
+            </label>
+            <div class="map-actions">
+              <button type="button" class="btn" id="useMyLocation">📍 Use my current location</button>
+              <button type="button" class="btn" id="findOnMap">Find address on map</button>
+            </div>
+            <iframe class="map-frame" id="dropMap" title="Delivery location map" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=Accra%2C%20Ghana&z=11&output=embed"></iframe>
+            <div class="map-status" id="dropStatus">Share your exact location so the delivery person can find you.</div>
+          </div>
           <button class="btn btn-primary" id="checkoutBtn">Place demo order →</button>
           <button class="btn" data-page="marketplace">Continue shopping</button>
           <p class="small muted" style="margin-top:12px">No payment is collected by this prototype.</p>
@@ -2868,28 +2970,31 @@ const ML = {
   db: null
 };
 
+/* Each category uses an outline icon (see the c-* symbols in the SVG sprite). */
 const CATEGORIES = [
-  { name: "Electronics", icon: "📱" },
-  { name: "Computers", icon: "💻" },
-  { name: "Fashion", icon: "👕" },
-  { name: "Shoes", icon: "👟" },
-  { name: "Beauty", icon: "💄" },
-  { name: "Home & Living", icon: "🛋️" },
-  { name: "Food & Groceries", icon: "🥑" },
-  { name: "Books & Education", icon: "📚" },
-  { name: "Gaming", icon: "🎮" },
-  { name: "Sports & Fitness", icon: "⚽" },
-  { name: "Jewellery", icon: "💍" },
-  { name: "Toys & Kids", icon: "🧸" },
-  { name: "Automotive", icon: "🚗" },
-  { name: "Tools & Equipment", icon: "🛠️" },
-  { name: "Digital Products", icon: "🧑‍💻" },
-  { name: "Professional Services", icon: "🧰" },
-  { name: "Office Supplies", icon: "🏢" },
-  { name: "Agriculture & Garden", icon: "🌱" },
-  { name: "Art & Handmade", icon: "🎨" },
-  { name: "Other", icon: "📦" }
+  { name: "Electronics", icon: "c-electronics" },
+  { name: "Computers", icon: "c-computers" },
+  { name: "Fashion", icon: "c-fashion" },
+  { name: "Shoes", icon: "c-shoes" },
+  { name: "Beauty", icon: "c-beauty" },
+  { name: "Home & Living", icon: "c-home" },
+  { name: "Food & Groceries", icon: "c-food" },
+  { name: "Books & Education", icon: "c-books" },
+  { name: "Gaming", icon: "c-gaming" },
+  { name: "Sports & Fitness", icon: "c-sports" },
+  { name: "Jewellery", icon: "c-jewellery" },
+  { name: "Toys & Kids", icon: "c-toys" },
+  { name: "Automotive", icon: "c-auto" },
+  { name: "Tools & Equipment", icon: "c-tools" },
+  { name: "Digital Products", icon: "c-digital" },
+  { name: "Professional Services", icon: "c-services" },
+  { name: "Office Supplies", icon: "c-office" },
+  { name: "Agriculture & Garden", icon: "c-agri" },
+  { name: "Art & Handmade", icon: "c-art" },
+  { name: "Other", icon: "c-other" }
 ];
+
+const ALL_CATEGORY = { name: "All products", icon: "c-all" };
 
 const $ = id => document.getElementById(id);
 
@@ -3015,15 +3120,18 @@ function notify(title, message, icon = "✦") {
   updateBadges();
 }
 
-function categoryIcon(category) {
-  return CATEGORIES.find(item => item.name === category)?.icon || "📦";
+function categoryGlyph(category, className = "") {
+  const name = category && category.name ? category.name : category;
+  const item = category && category.name ? category
+    : (CATEGORIES.find(c => c.name === name) || (name === ALL_CATEGORY.name ? ALL_CATEGORY : CATEGORIES[CATEGORIES.length - 1]));
+  return `<svg class="${className}" aria-hidden="true"><use href="#${item.icon}"/></svg>`;
 }
 
 function imageMarkup(item, className = "") {
   if (item.imageUrl) {
     return `<img class="${className}" src="${escapeHTML(item.imageUrl)}" alt="${escapeHTML(item.title || item.name || "Image")}" loading="lazy">`;
   }
-  return `<span class="product-emoji">${escapeHTML(item.emoji || categoryIcon(item.category))}</span>`;
+  return categoryGlyph(item.category, "category-fallback");
 }
 
 /* IndexedDB for actual files instead of storing images in localStorage. */
@@ -3268,7 +3376,7 @@ function renderCategories() {
   const markup = CATEGORIES.map(category => `
     <button class="category-card ${ML.selectedCategory === category.name ? "selected" : ""}"
       data-category="${escapeHTML(category.name)}">
-      <span class="category-icon">${category.icon}</span>
+      ${categoryGlyph(category, "category-glyph")}
       <strong>${escapeHTML(category.name)}</strong>
     </button>
   `).join("");
@@ -3276,7 +3384,7 @@ function renderCategories() {
   $("homeCategoryGrid").innerHTML = markup;
   $("allCategoryGrid").innerHTML = `
     <button class="category-card ${ML.selectedCategory === "All products" ? "selected" : ""}" data-category="All products">
-      <span class="category-icon">✦</span><strong>All products</strong>
+      ${categoryGlyph(ALL_CATEGORY, "category-glyph")}<strong>All products</strong>
     </button>
   ` + markup;
 
@@ -3332,7 +3440,7 @@ function productCard(product) {
   return `
     <article class="product-card">
       <div class="product-visual" data-open-product="${escapeHTML(product.id)}">
-        ${product.imageUrl ? `<img src="${escapeHTML(product.imageUrl)}" alt="${escapeHTML(product.title)}" loading="lazy">` : `<span class="product-emoji">${escapeHTML(product.emoji || categoryIcon(product.category))}</span>`}
+        ${product.imageUrl ? `<img src="${escapeHTML(product.imageUrl)}" alt="${escapeHTML(product.title)}" loading="lazy">` : `${categoryGlyph(product.category, "category-fallback")}`}
         ${product.oldPrice > product.price && product.price > 0 ? `<span class="product-tag">SPECIAL PRICE</span>` : ""}
         ${!available ? `<span class="product-tag" style="top:auto;bottom:10px;background:#fff0f0;color:#b33434">OUT OF STOCK</span>` : ""}
         <button class="product-fav ${saved ? "saved" : ""}" data-wishlist="${escapeHTML(product.id)}" aria-label="Toggle wishlist">
@@ -3405,7 +3513,7 @@ function openProduct(id) {
   const sellerPhone = seller?.whatsapp || product.whatsapp || "";
   const image = product.imageUrl
     ? `<img src="${escapeHTML(product.imageUrl)}" alt="${escapeHTML(product.title)}">`
-    : escapeHTML(product.emoji || categoryIcon(product.category));
+    : categoryGlyph(product.category, "category-fallback");
 
   $("productModalBody").innerHTML = `
     <div class="product-detail-layout">
@@ -3522,7 +3630,7 @@ function renderCart() {
       const product = cartProduct(item.productId);
       return `
         <article class="cart-item">
-          <div class="cart-image">${product.imageUrl ? `<img src="${escapeHTML(product.imageUrl)}" alt="${escapeHTML(product.title)}">` : escapeHTML(product.emoji || categoryIcon(product.category))}</div>
+          <div class="cart-image">${product.imageUrl ? `<img src="${escapeHTML(product.imageUrl)}" alt="${escapeHTML(product.title)}">` : categoryGlyph(product.category, "category-fallback")}</div>
           <div>
             <h3>${escapeHTML(product.title)}</h3>
             <p>${escapeHTML(product.category)} · ${money(product.price)} each</p>
@@ -3546,6 +3654,100 @@ function renderCart() {
   $("checkoutBtn").disabled = !items.length;
 }
 
+/* DELIVERY LOCATION + GOOGLE MAPS */
+
+const DROP = { lat: null, lng: null };
+
+function mapEmbedURL(query, zoom = 16) {
+  return `https://maps.google.com/maps?q=${encodeURIComponent(query)}&z=${zoom}&output=embed`;
+}
+
+function directionsURL(drop) {
+  const dest = (drop.lat != null && drop.lng != null) ? `${drop.lat},${drop.lng}` : (drop.address || "");
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dest)}&travelmode=driving`;
+}
+
+function viewMapURL(drop) {
+  const q = (drop.lat != null && drop.lng != null) ? `${drop.lat},${drop.lng}` : (drop.address || "");
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+}
+
+function setDropStatus(message) {
+  $("dropStatus").textContent = message;
+}
+
+function updateDropMap() {
+  const address = $("dropAddress").value.trim();
+  if (DROP.lat != null && DROP.lng != null) {
+    $("dropMap").src = mapEmbedURL(`${DROP.lat},${DROP.lng}`);
+  } else if (address) {
+    $("dropMap").src = mapEmbedURL(address + ", Ghana");
+  } else {
+    toast("Type an address or landmark first.", "error");
+  }
+}
+
+function useMyLocation() {
+  if (!navigator.geolocation) {
+    return setDropStatus("Your browser can't share its location. Type your address instead.");
+  }
+  setDropStatus("Finding your location…");
+  navigator.geolocation.getCurrentPosition(position => {
+    DROP.lat = Number(position.coords.latitude.toFixed(6));
+    DROP.lng = Number(position.coords.longitude.toFixed(6));
+    $("dropMap").src = mapEmbedURL(`${DROP.lat},${DROP.lng}`);
+    setDropStatus(`Location pinned (accuracy about ${Math.round(position.coords.accuracy)} m). The rider will navigate straight to this point.`);
+    if (!$("dropAddress").value.trim()) $("dropAddress").value = "Pinned GPS location";
+  }, error => {
+    const reason = error.code === 1 ? "Location permission was denied. Allow it in your browser, or type your address."
+      : "Couldn't get your location. Type your address and tap “Find address on map”.";
+    setDropStatus(reason);
+  }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 });
+}
+
+function setupDelivery() {
+  $("useMyLocation").addEventListener("click", useMyLocation);
+  $("findOnMap").addEventListener("click", () => {
+    DROP.lat = null; DROP.lng = null;
+    updateDropMap();
+    setDropStatus("Map updated from your address. Use “current location” for a more exact pin.");
+  });
+  $("dropAddress").addEventListener("change", () => {
+    if ($("dropAddress").value.trim() !== "Pinned GPS location") { DROP.lat = null; DROP.lng = null; }
+  });
+}
+
+function readDropoff() {
+  return {
+    phone: $("dropPhone").value.trim(),
+    address: $("dropAddress").value.trim(),
+    notes: $("dropNotes").value.trim(),
+    lat: DROP.lat,
+    lng: DROP.lng
+  };
+}
+
+function dropoffMarkup(order) {
+  const drop = order.dropoff;
+  if (!drop || (!drop.address && drop.lat == null)) return "";
+  const hasPin = drop.lat != null && drop.lng != null;
+  const query = hasPin ? `${drop.lat},${drop.lng}` : drop.address + ", Ghana";
+  const dir = directionsURL(drop);
+  const share = `https://wa.me/?text=${encodeURIComponent(`Delivery ${order.orderNumber} for ${order.buyerName}\nPhone: ${drop.phone}\nAddress: ${drop.address}${drop.notes ? "\nNote: " + drop.notes : ""}\nDirections: ${dir}`)}`;
+  return `
+    <div class="delivery-box" style="margin-top:18px">
+      <h4>Deliver to</h4>
+      <div class="small"><strong>${escapeHTML(order.buyerName)}</strong> · <a href="tel:${escapeHTML(drop.phone)}">${escapeHTML(drop.phone)}</a></div>
+      <div class="small">${escapeHTML(drop.address)}${drop.notes ? `<br><span class="muted">${escapeHTML(drop.notes)}</span>` : ""}</div>
+      <iframe class="map-frame" title="Delivery map" loading="lazy" src="${mapEmbedURL(query)}"></iframe>
+      <div class="map-actions">
+        <a class="btn btn-primary" href="${dir}" target="_blank" rel="noopener">Get directions</a>
+        <a class="btn" href="${viewMapURL(drop)}" target="_blank" rel="noopener">Open in Google Maps</a>
+        <a class="btn" href="${share}" target="_blank" rel="noopener">Send to rider</a>
+      </div>
+    </div>`;
+}
+
 function checkout() {
   if (!ML.data.cart.length) return toast("Your cart is empty.", "error");
   const user = getUser();
@@ -3562,6 +3764,12 @@ function checkout() {
   if (unavailable) {
     renderCart();
     return toast("One or more products no longer have enough stock. Review your cart.", "error");
+  }
+
+  const dropoff = readDropoff();
+  if (!dropoff.phone || (!dropoff.address && dropoff.lat == null)) {
+    $("deliveryBox").scrollIntoView({ behavior: "smooth", block: "center" });
+    return toast("Add your phone number and delivery location so the rider can find you.", "error");
   }
 
   const totals = cartTotals();
@@ -3587,6 +3795,7 @@ function checkout() {
     tax: totals.tax,
     total: totals.total,
     status: "Pending confirmation",
+    dropoff,
     createdAt: Date.now(),
     demo: true
   };
@@ -3632,7 +3841,7 @@ function renderInventory() {
       <thead><tr><th>Product</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead>
       <tbody>${products.map(product => `
         <tr>
-          <td><div class="table-product"><div class="table-product-image">${product.imageUrl ? `<img src="${escapeHTML(product.imageUrl)}" alt="">` : escapeHTML(product.emoji || categoryIcon(product.category))}</div><div><strong>${escapeHTML(product.title)}</strong><span class="muted small">${escapeHTML(product.category)}</span></div></div></td>
+          <td><div class="table-product"><div class="table-product-image">${product.imageUrl ? `<img src="${escapeHTML(product.imageUrl)}" alt="">` : categoryGlyph(product.category, "category-fallback")}</div><div><strong>${escapeHTML(product.title)}</strong><span class="muted small">${escapeHTML(product.category)}</span></div></div></td>
           <td><strong>${money(product.price)}</strong></td>
           <td><input aria-label="Stock quantity" type="number" min="0" step="1" value="${Number(product.stock)}" data-stock-input="${escapeHTML(product.id)}" style="width:75px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text)"></td>
           <td><span class="status ${product.stock > 0 ? "done" : "cancelled"}">${product.stock > 0 ? (product.stock <= 5 ? "Low stock" : "Available") : "Out of stock"}</span></td>
@@ -3668,7 +3877,7 @@ function renderSellerDashboard() {
     </div>`).join("");
 
   $("sellerRecentListings").innerHTML = products.length
-    ? `<div class="table-wrap"><table><thead><tr><th>Product</th><th>Price</th><th>Stock</th><th></th></tr></thead><tbody>${products.slice(0, 5).map(product => `<tr><td><div class="table-product"><div class="table-product-image">${product.imageUrl ? `<img src="${escapeHTML(product.imageUrl)}" alt="">` : escapeHTML(product.emoji || categoryIcon(product.category))}</div><strong>${escapeHTML(product.title)}</strong></div></td><td>${money(product.price)}</td><td>${product.stock}</td><td><button class="btn" data-edit-product="${escapeHTML(product.id)}">Edit</button></td></tr>`).join("")}</tbody></table></div>`
+    ? `<div class="table-wrap"><table><thead><tr><th>Product</th><th>Price</th><th>Stock</th><th></th></tr></thead><tbody>${products.slice(0, 5).map(product => `<tr><td><div class="table-product"><div class="table-product-image">${product.imageUrl ? `<img src="${escapeHTML(product.imageUrl)}" alt="">` : categoryGlyph(product.category, "category-fallback")}</div><strong>${escapeHTML(product.title)}</strong></div></td><td>${money(product.price)}</td><td>${product.stock}</td><td><button class="btn" data-edit-product="${escapeHTML(product.id)}">Edit</button></td></tr>`).join("")}</tbody></table></div>`
     : `<div class="empty-state"><div class="empty-icon">🏬</div><h3>Your shop starts here</h3><p>You haven't created any listings yet.</p><button class="btn btn-primary" data-page="addproduct">Add your first product</button></div>`;
 }
 
@@ -3680,10 +3889,10 @@ function renderSellerOrders() {
     return;
   }
 
-  $("sellerOrdersContainer").innerHTML = `<div class="table-wrap"><table><thead><tr><th>Order</th><th>Buyer</th><th>Items</th><th>Value</th><th>Status</th><th>Action</th></tr></thead><tbody>${orders.map(order => {
+  $("sellerOrdersContainer").innerHTML = `<div class="table-wrap"><table><thead><tr><th>Order</th><th>Buyer</th><th>Deliver to</th><th>Items</th><th>Value</th><th>Status</th><th>Action</th></tr></thead><tbody>${orders.map(order => {
     const items = order.items.filter(item => item.sellerId === ML.currentUser);
     const total = items.reduce((sum, item) => sum + item.price * item.qty, 0);
-    return `<tr><td><strong>${escapeHTML(order.orderNumber)}</strong><div class="small muted">${new Date(order.createdAt).toLocaleDateString()}</div></td><td>${escapeHTML(order.buyerName)}</td><td>${items.reduce((sum, item) => sum + item.qty, 0)}</td><td>${money(total)}</td><td><span class="status pending">${escapeHTML(order.status)}</span></td><td><button class="btn" data-order-status="${escapeHTML(order.id)}">Update status</button></td></tr>`;
+    return `<tr><td><strong>${escapeHTML(order.orderNumber)}</strong><div class="small muted">${new Date(order.createdAt).toLocaleDateString()}</div></td><td>${escapeHTML(order.buyerName)}${order.dropoff?.phone ? `<div class="small muted"><a href="tel:${escapeHTML(order.dropoff.phone)}">${escapeHTML(order.dropoff.phone)}</a></div>` : ""}</td><td>${order.dropoff && (order.dropoff.address || order.dropoff.lat != null) ? `<div class="small">${escapeHTML(order.dropoff.address)}</div><a class="small" href="${directionsURL(order.dropoff)}" target="_blank" rel="noopener">📍 Get directions</a>` : `<span class="muted small">Not provided</span>`}</td><td>${items.reduce((sum, item) => sum + item.qty, 0)}</td><td>${money(total)}</td><td><span class="status pending">${escapeHTML(order.status)}</span></td><td><button class="btn" data-order-status="${escapeHTML(order.id)}">Update status</button></td></tr>`;
   }).join("")}</tbody></table></div><p class="small muted" style="margin-top:12px">These are local demonstration orders, not verified customer transactions.</p>`;
 }
 
@@ -3763,7 +3972,7 @@ async function handleProductSubmit(event) {
     location: $("productBrandLocation").value.trim() || user.location || "",
     delivery: $("productDelivery").value.trim(),
     description,
-    emoji: old?.emoji || categoryIcon($("productCategory").value),
+    emoji: "",
     sellerId: user.id,
     sellerName: user.shopName || user.name,
     whatsapp: user.whatsapp || "",
@@ -3846,6 +4055,7 @@ function showOrderDetails(id) {
     <div class="summary-row"><span>Delivery estimate</span><strong>${money(order.delivery)}</strong></div>
     <div class="summary-row"><span>Tax estimate</span><strong>${money(order.tax)}</strong></div>
     <div class="summary-row summary-total"><span>Total</span><strong>${money(order.total)}</strong></div>
+    ${dropoffMarkup(order)}
     <p class="small muted" style="margin-top:15px">Demo order only. No payment was processed and delivery is not tracked by this prototype.</p>
   `;
   $("genericModal").classList.add("open");
@@ -4451,6 +4661,7 @@ $("profileForm").addEventListener("submit", saveProfile);
 $("saveShopDetails").addEventListener("click", saveShopDetails);
 $("authForm").addEventListener("submit", handleAuth);
 $("checkoutBtn").addEventListener("click", checkout);
+setupDelivery();
 $("logoutBtn").addEventListener("click", logout);
 $("exportDataBtn").addEventListener("click", exportData);
 $("clearDataBtn").addEventListener("click", clearLocalData);
