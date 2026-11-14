@@ -6,6 +6,22 @@
 <meta name="theme-color" content="#10110f">
 <!-- PWA Configuration -->
 <link rel="manifest" href="./manifest.json">
+<meta name="google-site-verification" content="m--DOILDHifyKtVJ7cGM-1IxAiVgpPeIpDyWUbjMbQ8" />
+
+ <script type="application/ld+json">
+   {
+     "@context": "https://schema.org",
+     "@type": "Person",
+     "name": "Emmanuel Pobee Okpoti",
+     "url": "https://marketlink-lm.vercel.app",
+     "jobTitle": "Frontend Developer & Builder of ADAPT OS, Lumen and MarketLink",
+     "address": { "@type": "PostalAddress", "addressLocality": "Accra", "addressCountry": "GH" },
+     "sameAs": [
+       "https://www.linkedin.com/in/emmanuel-pobee-359718432",
+       "https://www.facebook.com/profile.php?id=61585641626567"
+     ]
+   }
+ </script>
 
 <meta name="theme-color" content="#10110f">
 
@@ -2334,7 +2350,37 @@ iframe {
     transition-duration: .01ms !important;
   }
 }
+
+/* POST-LOGIN LOADING SCREEN */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  background: #11120f;
+  color: #f2f3eb;
+}
+.loading-screen.open { display: flex; }
+.loading-spinner {
+  width: 54px;
+  height: 54px;
+  border: 4px solid rgba(255,255,255,.14);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: mlSpin .9s linear infinite;
+}
+.loading-screen p {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -.3px;
+}
+@keyframes mlSpin { to { transform: rotate(360deg); } }
 </style>
+
 </head>
 
 <body>
@@ -2368,7 +2414,7 @@ iframe {
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
       <div class="brand">
-        <div class="brand-mark">ML</div>
+        <div class="brand-mark">M.</div>
         <div class="brand-copy">
           <strong>Market Link</strong>
           <span>YOUR WORLD. ONE MARKETPLACE.</span>
@@ -2421,7 +2467,7 @@ iframe {
       <button class="icon-btn mobile-menu-btn" id="menuToggle" aria-label="Open menu"><svg><use href="#i-menu"/></svg></button>
 
       <div class="mobile-brand brand">
-        <div class="brand-mark">ML</div>
+        <div class="brand-mark">M.</div>
         <div class="brand-copy"><strong>Market Link</strong><span>MARKETPLACE</span></div>
       </div>
 
@@ -2729,6 +2775,11 @@ iframe {
   </form>
 </section>
 
+<div class="loading-screen" id="loadingScreen" aria-live="polite" aria-hidden="true">
+  <div class="loading-spinner"></div>
+  <p>Loading MarketLink...</p>
+</div>
+
 <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
 <!-- AUTH -->
@@ -2876,20 +2927,11 @@ function getUser() {
 }
 
 function defaultData() {
-  const demoProducts = [
-    { id: "demo_headphones", title: "Studio Wireless Headphones", category: "Electronics", brand: "Studio", price: 485, oldPrice: 560, stock: 12, condition: "New", sku: "AUD-001", location: "Accra, Ghana", delivery: "Arrange delivery with seller", description: "Enjoy your music with comfortable over-ear headphones designed for everyday listening, study sessions, and travel. Confirm exact specifications and warranty with the seller before purchase.", emoji: "🎧", sellerId: null, sellerName: "Market Link Finds", createdAt: Date.now() - 1000000, demo: true },
-    { id: "demo_sneakers", title: "Everyday Urban Sneakers", category: "Shoes", brand: "Urban", price: 320, oldPrice: 380, stock: 8, condition: "New", sku: "SHO-002", location: "Accra, Ghana", delivery: "Arrange delivery with seller", description: "Versatile everyday sneakers for casual outings. Contact the seller to confirm available sizes, colours, and fit before ordering.", emoji: "👟", sellerId: null, sellerName: "Urban Picks", createdAt: Date.now() - 900000, demo: true },
-    { id: "demo_watch", title: "Minimal Classic Wristwatch", category: "Fashion", brand: "Classic", price: 275, oldPrice: 0, stock: 15, condition: "New", sku: "FAS-003", location: "Kumasi, Ghana", delivery: "Arrange delivery with seller", description: "A minimalist wristwatch suited to everyday outfits and special occasions. Ask the seller for materials, measurements, and care details.", emoji: "⌚", sellerId: null, sellerName: "Classic Corner", createdAt: Date.now() - 800000, demo: true },
-    { id: "demo_bag", title: "Structured Everyday Tote", category: "Fashion", brand: "Everyday", price: 190, oldPrice: 0, stock: 6, condition: "New", sku: "FAS-004", location: "Accra, Ghana", delivery: "Arrange delivery with seller", description: "A versatile tote for carrying daily essentials. Check dimensions and available colour options with the seller.", emoji: "👜", sellerId: null, sellerName: "Everyday Goods", createdAt: Date.now() - 700000, demo: true },
-    { id: "demo_keyboard", title: "Compact Mechanical Keyboard", category: "Computers", brand: "KeyWorks", price: 410, oldPrice: 450, stock: 9, condition: "New", sku: "TEC-005", location: "Accra, Ghana", delivery: "Arrange delivery with seller", description: "A compact keyboard for study and productivity setups. Contact the seller to confirm layout, connection type, and switch specifications.", emoji: "⌨️", sellerId: null, sellerName: "Desk Setup", createdAt: Date.now() - 600000, demo: true },
-    { id: "demo_skincare", title: "Daily Care Essentials Set", category: "Beauty", brand: "Daily Care", price: 145, oldPrice: 0, stock: 10, condition: "New", sku: "BEA-006", location: "Tema, Ghana", delivery: "Arrange delivery with seller", description: "A personal-care gift set. Please check the ingredients, suitability, and packaging details with the seller before buying.", emoji: "🧴", sellerId: null, sellerName: "Care & Co.", createdAt: Date.now() - 500000, demo: true },
-    { id: "demo_book", title: "Creative Thinking Journal", category: "Books & Education", brand: "Paper Studio", price: 65, oldPrice: 0, stock: 25, condition: "New", sku: "BOK-007", location: "Accra, Ghana", delivery: "Arrange delivery with seller", description: "A journal for notes, planning, creative thinking, and personal projects. Ask about paper size and page count if these matter to you.", emoji: "📓", sellerId: null, sellerName: "Paper Studio", createdAt: Date.now() - 400000, demo: true },
-    { id: "demo_speaker", title: "Portable Bluetooth Speaker", category: "Electronics", brand: "Sound", price: 220, oldPrice: 0, stock: 0, condition: "New", sku: "AUD-008", location: "Accra, Ghana", delivery: "Ask seller about restocking", description: "A portable speaker listing currently marked out of stock. Message the seller to ask about specifications and possible restocking.", emoji: "🔊", sellerId: null, sellerName: "Sound Corner", createdAt: Date.now() - 300000, demo: true }
-  ];
+
 
   return {
     users: [],
-    products: demoProducts,
+    products: [],
     cart: [],
     wishlist: [],
     orders: [],
@@ -2929,13 +2971,17 @@ function loadData() {
     if (!raw) return defaultData();
     const parsed = JSON.parse(raw);
     const base = defaultData();
+    // Clear the old built-in sample (emoji) products; keep only real user listings.
+    const cleanProducts = (Array.isArray(parsed.products) ? parsed.products : [])
+      .filter(product => !product.demo && !String(product.id).startsWith("demo_"));
+    const liveIds = new Set(cleanProducts.map(product => product.id));
     return {
       ...base,
       ...parsed,
       users: Array.isArray(parsed.users) ? parsed.users : [],
-      products: Array.isArray(parsed.products) ? parsed.products : base.products,
-      cart: Array.isArray(parsed.cart) ? parsed.cart : [],
-      wishlist: Array.isArray(parsed.wishlist) ? parsed.wishlist : [],
+      products: cleanProducts,
+      cart: Array.isArray(parsed.cart) ? parsed.cart.filter(item => liveIds.has(item.productId || item.id)) : [],
+      wishlist: Array.isArray(parsed.wishlist) ? parsed.wishlist.filter(id => liveIds.has(id)) : [],
       orders: Array.isArray(parsed.orders) ? parsed.orders : [],
       notifications: Array.isArray(parsed.notifications) ? parsed.notifications : [],
       attachments: Array.isArray(parsed.attachments) ? parsed.attachments : [],
@@ -3106,6 +3152,17 @@ function setAuthMode(mode) {
   $("authPassword").autocomplete = register ? "new-password" : "current-password";
 }
 
+function showLoadingScreen(done, ms = 5000) {
+  const screen = $("loadingScreen");
+  screen.classList.add("open");
+  screen.setAttribute("aria-hidden", "false");
+  setTimeout(() => {
+    screen.classList.remove("open");
+    screen.setAttribute("aria-hidden", "true");
+    done();
+  }, ms);
+}
+
 function handleAuth(event) {
   event.preventDefault();
   const email = $("authEmail").value.trim().toLowerCase();
@@ -3149,8 +3206,10 @@ function handleAuth(event) {
     notify("Welcome to Market Link", "Your local account has been created.", "👋");
     saveData();
     closeAuth();
-    renderAll();
-    toast("Welcome, " + name + "!", "success");
+    showLoadingScreen(() => {
+      renderAll();
+      toast("Welcome, " + name + "!", "success");
+    });
     return;
   }
 
@@ -3167,8 +3226,10 @@ function handleAuth(event) {
   ML.data.sessions.userId = user.id;
   saveData();
   closeAuth();
-  renderAll();
-  toast("Welcome back, " + user.name + "!", "success");
+  showLoadingScreen(() => {
+    renderAll();
+    toast("Welcome back, " + user.name + "!", "success");
+  });
 }
 
 function logout() {
