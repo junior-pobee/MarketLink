@@ -77,7 +77,7 @@ window.MarketLinkBackend = (() => {
         email,
         password,
         options: {
-          data: { display_name: name }
+          data: { display_name: name, account_type: accountType }
         }
       });
       if (error) throw error;
@@ -275,7 +275,15 @@ window.MarketLinkBackend = (() => {
       if (result.error) throw result.error;
     },
     async deleteProduct(productId) {
-      const { error } = await requireClient().from("products").delete().eq("id", productId);
+      const db = requireClient();
+      const { data: media, error: mediaError } = await db.from("product_media").select("storage_path").eq("product_id", productId);
+      if (mediaError) throw mediaError;
+      const paths = (media || []).map(item => item.storage_path);
+      if (paths.length) {
+        const { error: storageError } = await db.storage.from("product-media").remove(paths);
+        if (storageError) throw storageError;
+      }
+      const { error } = await db.from("products").delete().eq("id", productId);
       if (error) throw error;
     },
     async updateStock(productId, quantity) {
