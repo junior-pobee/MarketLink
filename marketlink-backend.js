@@ -77,6 +77,7 @@ window.MarketLinkBackend = (() => {
         email,
         password,
         options: {
+          emailRedirectTo: window.location.origin,
           data: { display_name: name, account_type: accountType }
         }
       });
@@ -211,12 +212,14 @@ window.MarketLinkBackend = (() => {
     },
     async loadCollections(userId) {
       const db = requireClient();
-      const [{ data: cart, error: cartError }, { data: wishlist, error: wishlistError }] = await Promise.all([
+      const [{ data: cart, error: cartError }, { data: wishlist, error: wishlistError }, { data: notes, error: notesError }] = await Promise.all([
         db.from("carts").select("id").eq("user_id", userId).single(),
-        db.from("wishlists").select("id").eq("user_id", userId).single()
+        db.from("wishlists").select("id").eq("user_id", userId).single(),
+        db.from("notifications").select("id,title,body,kind,read_at,created_at").eq("user_id", userId).order("created_at", { ascending: false }).limit(50)
       ]);
       if (cartError) throw cartError;
       if (wishlistError) throw wishlistError;
+      if (notesError) throw notesError;
       const [{ data: cartItems, error: cartItemsError }, { data: savedItems, error: savedError }] = await Promise.all([
         db.from("cart_items").select("product_id,quantity").eq("cart_id", cart.id),
         db.from("wishlist_items").select("product_id").eq("wishlist_id", wishlist.id)
@@ -225,8 +228,30 @@ window.MarketLinkBackend = (() => {
       if (savedError) throw savedError;
       return {
         cart: (cartItems || []).map(item => ({ productId: item.product_id, qty: item.quantity })),
-        wishlist: (savedItems || []).map(item => item.product_id)
+        wishlist: (savedItems || []).map(item => item.product_id),
+        notifications: (notes || []).map(note => ({
+          id: note.id,
+          title: note.title,
+          message: note.body,
+          icon: "✦",
+          read: Boolean(note.read_at),
+          createdAt: new Date(note.created_at).getTime()
+        }))
       };
+    },
+    async markNotificationsRead(userId) {
+      const { error } = await requireClient().from("notifications").update({ read_at: new Date().toISOString() }).eq("user_id", userId).is("read_at", null);
+      if (error) throw error;
+    },
+    subscribeProducts(callback) {
+      return requireClient().channel("marketlink-products")
+        .on("postgres_changes", { event: "*", schema: "public", table: "products" }, callback)
+        .subscribe();
+    },
+    subscribeNotifications(userId, callback) {
+      return requireClient().channel("marketlink-notifications-" + userId)
+        .on("postgres_changes", { event: "*", schema: "public", table: "notifications", filter: "user_id=eq." + userId }, callback)
+        .subscribe();
     },
     async addCartItem(productId, quantity = 1) {
       const db = requireClient();
