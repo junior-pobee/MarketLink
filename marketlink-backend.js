@@ -28,7 +28,8 @@ window.MarketLinkBackend = (() => {
       shopName: "",
       shopType: "Individual seller",
       photoUrl: "",
-      photoId: profile?.avatar_path || ""
+      photoId: profile?.avatar_path || "",
+      accountStatus: profile?.account_status || "active"
     };
   }
 
@@ -92,6 +93,7 @@ window.MarketLinkBackend = (() => {
         });
         if (profileError) throw profileError;
       }
+      if (!data.session) throw new Error("Account was created, but instant sign-in is not active. Ask the platform administrator to check the Supabase email confirmation setting.");
       return data;
     },
     async signIn(email, password) {
@@ -321,24 +323,14 @@ window.MarketLinkBackend = (() => {
       const db = requireClient();
       const { data: authData, error: authError } = await db.auth.getUser();
       if (authError || !authData.user) throw new Error("Sign in to contact a seller.");
-      const { data: conversation, error } = await db.from("conversations").insert({
-        created_by: authData.user.id,
-        product_id: productId || null,
-        subject: "Product enquiry"
-      }).select().single();
-      if (error) throw error;
-      const { error: memberError } = await db.from("conversation_members").insert([
-        { conversation_id: conversation.id, user_id: authData.user.id },
-        { conversation_id: conversation.id, user_id: otherUserId }
-      ]);
-      if (memberError) throw memberError;
-      const { error: messageError } = await db.from("messages").insert({
-        conversation_id: conversation.id,
-        sender_id: authData.user.id,
-        body: message
+      const { data: conversationId, error } = await db.rpc("marketlink_start_conversation", {
+        p_recipient_id: otherUserId,
+        p_product_id: productId || null,
+        p_subject: "Product enquiry",
+        p_message: message
       });
-      if (messageError) throw messageError;
-      return conversation;
+      if (error) throw error;
+      return { id: conversationId };
     }
   };
 })();
