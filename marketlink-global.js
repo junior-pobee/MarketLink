@@ -63,7 +63,21 @@
   async function loadPlans() {
     const { data, error } = await db.from("seller_subscription_catalog").select("plan_code,plan_name,monthly_fee,currency,category_limit").eq("active", true).order("monthly_fee");
     if (error) throw error;
-    el("ml-plan-list").innerHTML = '<h3 style="margin:0 0 8px">Seller subscriptions</h3>' + (data || []).map(plan => `<div class="ml-item"><strong>${escapeHtml(plan.plan_name)}</strong><div style="font-size:20px;font-weight:800">GH₵${Number(plan.monthly_fee).toFixed(2)} / month</div><div class="ml-muted">${plan.category_limit === 1 ? "One product category" : "Multiple product categories"}</div></div>`).join("");
+    el("ml-plan-list").innerHTML = '<h3 style="margin:0 0 8px">Seller subscriptions</h3>' + (data || []).map(plan => `<div class="ml-item"><strong>${escapeHtml(plan.plan_name)}</strong><div style="font-size:20px;font-weight:800">GH₵${Number(plan.monthly_fee).toFixed(2)} / month</div><div class="ml-muted">${plan.category_limit === 1 ? "One product category" : "Multiple product categories"}</div>${plan.category_limit === null ? '<input type="number" min="2" max="100" value="2" aria-label="Number of product categories" data-plan-count="' + plan.plan_code + '">' : ""}<button class="ml-action" data-request-plan="${plan.plan_code}">Request subscription</button></div>`).join("");
+    el("ml-plan-list").querySelectorAll("[data-request-plan]").forEach(button => button.addEventListener("click", async () => {
+      try {
+        const code = button.dataset.requestPlan;
+        const countInput = el("ml-plan-list").querySelector('[data-plan-count="' + code + '"]');
+        const categoryCount = countInput ? Number(countInput.value) : 1;
+        const { error: requestError } = await db.rpc("marketlink_request_subscription", {
+          p_plan_code: code,
+          p_category_count: categoryCount
+        });
+        if (requestError) throw requestError;
+        notify("Subscription request submitted. It remains pending until payment is verified by the platform.");
+        await loadPlans();
+      } catch (error) { notify(error.message || "Could not submit subscription request."); }
+    }));
   }
   async function loadSellerDirectory() {
     const { data, error } = await db.from("storefronts")
@@ -207,8 +221,34 @@
     if (!target || document.getElementById("ml-global-admin")) return;
     const admin = document.createElement("section");
     admin.id = "ml-global-admin";
-    admin.innerHTML = `<h2>MarketLink CEO / Admin Console</h2><p>Publish platform-wide updates and moderate accounts.</p><form id="ml-announcement-form"><input id="ml-announcement-title" maxlength="140" required placeholder="Announcement title"><textarea id="ml-announcement-body" maxlength="5000" required placeholder="Announcement message"></textarea><select id="ml-announcement-audience"><option value="all">All users</option><option value="buyers">Buyers</option><option value="sellers">Sellers</option></select><button class="ml-action" type="submit">Publish announcement</button></form><hr><form id="ml-moderation-form"><input id="ml-target-user" required placeholder="User account UUID"><select id="ml-moderation-action"><option value="suspend">Suspend account</option><option value="ban">Ban account</option><option value="reinstate">Reinstate account</option></select><input id="ml-moderation-reason" required maxlength="500" placeholder="Reason"><button class="ml-action" type="submit">Apply moderation action</button></form>`;
+    admin.innerHTML = `<h2>MarketLink CEO / Admin Console</h2><p>Publish platform-wide updates and moderate accounts.</p><h3>Pending seller subscriptions</h3><div id="ml-pending-subscriptions"></div><form id="ml-announcement-form"><input id="ml-announcement-title" maxlength="140" required placeholder="Announcement title"><textarea id="ml-announcement-body" maxlength="5000" required placeholder="Announcement message"></textarea><select id="ml-announcement-audience"><option value="all">All users</option><option value="buyers">Buyers</option><option value="sellers">Sellers</option></select><button class="ml-action" type="submit">Publish announcement</button></form><hr><form id="ml-moderation-form"><input id="ml-target-user" required placeholder="User account UUID"><select id="ml-moderation-action"><option value="suspend">Suspend account</option><option value="ban">Ban account</option><option value="reinstate">Reinstate account</option></select><input id="ml-moderation-reason" required maxlength="500" placeholder="Reason"><button class="ml-action" type="submit">Apply moderation action</button></form>`;
     target.prepend(admin);
+    const { data: pendingPlans, error: plansError } = await db.from("seller_plans")
+      .select("id,seller_id,plan_code,monthly_fee,currency,category_count,created_at")
+      .eq("status", "pending")
+      .eq("payment_status", "pending")
+      .order("created_at", { ascending: true })
+      .limit(50);
+    const pendingContainer = admin.querySelector("#ml-pending-subscriptions");
+    if (plansError) {
+      pendingContainer.textContent = plansError.message;
+    } else {
+      pendingContainer.innerHTML = (pendingPlans || []).map(plan => `<div class="ml-item"><strong>${escapeHtml(plan.plan_code === "single_category" ? "Single category" : "Multiple categories")}</strong><div class="ml-muted">Seller: ${escapeHtml(plan.seller_id)} · ${plan.category_count} categories · GH₵${Number(plan.monthly_fee).toFixed(2)}/month</div><div class="ml-row"><button class="ml-action" data-review-plan="${plan.id}" data-approve="true">Approve verified payment</button><button class="ml-action" data-review-plan="${plan.id}" data-approve="false" style="background:#9b3333">Decline</button></div></div>`).join("") || '<p class="ml-muted">No pending subscriptions.</p>';
+      pendingContainer.querySelectorAll("[data-review-plan]").forEach(button => button.addEventListener("click", async () => {
+        try {
+          const approve = button.dataset.approve === "true";
+          const reason = approve ? "Payment independently verified by authorized platform operator." : "Payment not verified.";
+          const { error: reviewError } = await db.rpc("marketlink_review_subscription", {
+            p_plan_id: button.dataset.reviewPlan,
+            p_approve: approve,
+            p_reason: reason
+          });
+          if (reviewError) throw reviewError;
+          notify(approve ? "Subscription activated." : "Subscription declined.");
+          await loadAdmin();
+        } catch (error) { notify(error.message || "Could not review subscription."); }
+      }));
+    }
     admin.querySelector("#ml-announcement-form").addEventListener("submit", async event => {
       event.preventDefault();
       const { error: publishError } = await db.rpc("marketlink_publish_announcement", {
