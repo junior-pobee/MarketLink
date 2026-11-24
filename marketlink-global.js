@@ -200,13 +200,14 @@
     });
   }
   async function boot() {
+    db.auth.onAuthStateChange((_event, session) => {
+      state.user = session?.user || null;
+      if (state.user) loadAdmin().catch(error => console.error(error));
+      else document.getElementById("ml-global-admin")?.remove();
+    });
     try {
       const user = await currentUser();
-      if (!user) return;
-      await loadAdmin();
-      db.auth.onAuthStateChange(() => {
-        currentUser().then(loadAdmin).catch(() => {});
-      });
+      if (user) await loadAdmin();
     } catch (error) { console.error("MarketLink global services:", error); }
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
