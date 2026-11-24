@@ -2746,7 +2746,7 @@ iframe {
             <div class="field full"><label for="productDescription">Product description *</label><textarea id="productDescription" required maxlength="4000" placeholder="Describe the product, features, condition, size, materials, and other useful details."></textarea></div>
             <div class="field full">
               <label for="productImage">Product image</label>
-              <div class="file-drop"><div style="font-size:25px">▧</div><strong>Choose a product image</strong><span>Images are stored locally in this browser when storage is available. No fixed file-size limit is imposed by the app.</span><input id="productImage" type="file" accept="image/*"></div>
+              <div class="file-drop"><div style="font-size:25px">▧</div><strong>Choose product images or video</strong><span>Upload one image or MP4/WebM video. Files are stored in secure MarketLink cloud storage.</span><input id="productImage" type="file" accept="image/jpeg,image/png,image/webp,image/avif,video/mp4,video/webm"></div>
               <div id="productImagePreview" class="small muted" style="margin-top:9px">No new image selected.</div>
             </div>
           </div>
@@ -3438,7 +3438,7 @@ function productCard(product) {
   return `
     <article class="product-card">
       <div class="product-visual" data-open-product="${escapeHTML(product.id)}">
-        ${product.imageUrl ? `<img src="${escapeHTML(product.imageUrl)}" alt="${escapeHTML(product.title)}" loading="lazy">` : `${categoryGlyph(product.category, "category-fallback")}`}
+        ${product.videoUrl ? `<video src="${escapeHTML(product.videoUrl)}" controls playsinline preload="metadata"></video>` : product.imageUrl ? `<img src="${escapeHTML(product.imageUrl)}" alt="${escapeHTML(product.title)}" loading="lazy">` : `${categoryGlyph(product.category, "category-fallback")}`}
         ${product.oldPrice > product.price && product.price > 0 ? `<span class="product-tag">SPECIAL PRICE</span>` : ""}
         ${!available ? `<span class="product-tag" style="top:auto;bottom:10px;background:#fff0f0;color:#b33434">OUT OF STOCK</span>` : ""}
         <button class="product-fav ${saved ? "saved" : ""}" data-wishlist="${escapeHTML(product.id)}" aria-label="Toggle wishlist">
