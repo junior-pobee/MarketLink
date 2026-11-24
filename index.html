@@ -3293,11 +3293,7 @@ async function handleAuth(event) {
     let authData;
     if (ML.authMode === "register") {
       authData = await MarketLinkBackend.signUp({ email, password, name, accountType: ML.roleChoice });
-      if (!authData.session || !authData.user) {
-        toast("Check your email to confirm your address, then log in.", "success");
-        setAuthMode("login");
-        return;
-      }
+      if (!authData.session || !authData.user) throw new Error("Instant sign-in is unavailable. Confirm that email confirmation is disabled in Supabase Auth.");
       await MarketLinkBackend.updateProfile(authData.user.id, {
         display_name: name,
         whatsapp: normalizePhone(whatsApp),
@@ -3308,6 +3304,11 @@ async function handleAuth(event) {
     }
 
     const user = await MarketLinkBackend.loadProfile(authData.user);
+    if (user.accountStatus !== "active") {
+      await MarketLinkBackend.signOut();
+      toast("This account is currently " + user.accountStatus + ". Contact MarketLink support.", "error");
+      return;
+    }
     ML.backendUser = user;
     ML.data.users = [user];
     ML.currentUser = user.id;
