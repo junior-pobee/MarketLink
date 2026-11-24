@@ -2967,6 +2967,8 @@ const ML = {
   currentProduct: null,
   currentUser: null,
   backendUser: null,
+  productChannel: null,
+  notificationChannel: null,
   data: null,
   db: null
 };
@@ -3308,6 +3310,11 @@ async function handleAuth(event) {
     ML.currentUser = user.id;
     ML.data.sessions.userId = user.id;
     ML.data.products = await MarketLinkBackend.loadProducts();
+    const collections = await MarketLinkBackend.loadCollections(user.id);
+    ML.data.cart = collections.cart;
+    ML.data.wishlist = collections.wishlist;
+    ML.data.notifications = collections.notifications;
+    startRealtimeSync(user.id);
     saveData();
     closeAuth();
     showLoadingScreen(() => {
@@ -4684,12 +4691,19 @@ $("darkModeBtn").addEventListener("click", () => {
   toast("Dark mode enabled.");
 });
 
-$("markNotificationsRead").addEventListener("click", () => {
-  ML.data.notifications.forEach(note => note.read = true);
-  saveData();
-  renderNotifications();
-  updateBadges();
-  toast("Notifications marked as read.");
+$("markNotificationsRead").addEventListener("click", async () => {
+  const user = getUser();
+  try {
+    if (user && MarketLinkBackend.configured) await MarketLinkBackend.markNotificationsRead(user.id);
+    ML.data.notifications.forEach(note => note.read = true);
+    saveData();
+    renderNotifications();
+    updateBadges();
+    toast("Notifications marked as read.");
+  } catch (error) {
+    console.error(error);
+    toast(error.message || "Notifications could not be updated.", "error");
+  }
 });
 
 $("menuToggle").addEventListener("click", () => $("sidebar").classList.toggle("open"));
@@ -4711,6 +4725,32 @@ document.querySelectorAll(".modal-backdrop").forEach(backdrop => {
 $("sortProducts").value = "featured";
 
 /* INITIALIZE */
+
+function startRealtimeSync(userId) {
+  if (!MarketLinkBackend.configured || !userId) return;
+  if (ML.productChannel) MarketLinkBackend.client.removeChannel(ML.productChannel);
+  if (ML.notificationChannel) MarketLinkBackend.client.removeChannel(ML.notificationChannel);
+  ML.productChannel = MarketLinkBackend.subscribeProducts(async () => {
+    try {
+      ML.data.products = await MarketLinkBackend.loadProducts();
+      saveData();
+      renderAll();
+    } catch (error) {
+      console.error(error);
+    }
+  });
+  ML.notificationChannel = MarketLinkBackend.subscribeNotifications(userId, async () => {
+    try {
+      const collections = await MarketLinkBackend.loadCollections(userId);
+      ML.data.notifications = collections.notifications;
+      saveData();
+      renderNotifications();
+      updateBadges();
+    } catch (error) {
+      console.error(error);
+    }
+  });
+}
 
 async function initMarketLink() {
   ML.data = loadData();
@@ -4741,6 +4781,8 @@ async function initMarketLink() {
         const collections = await MarketLinkBackend.loadCollections(user.id);
         ML.data.cart = collections.cart;
         ML.data.wishlist = collections.wishlist;
+        ML.data.notifications = collections.notifications;
+        startRealtimeSync(user.id);
       } else {
         ML.data.users = [];
         ML.data.sessions.userId = null;
