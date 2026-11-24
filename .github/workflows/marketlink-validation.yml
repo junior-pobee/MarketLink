@@ -1,0 +1,39 @@
+name: MarketLink validation
+
+on:
+  push:
+    branches:
+      - main
+      - marketlink/global-foundation
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check browser scripts
+        run: |
+          node --check marketlink-config.js
+          node --check marketlink-backend.js
+          node <<'NODE'
+          const fs = require("node:fs");
+          const vm = require("node:vm");
+          const html = fs.readFileSync("index.html", "utf8");
+          const scripts = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)];
+          let checked = 0;
+          for (const [index, match] of scripts.entries()) {
+            const attributes = match[1] || "";
+            const source = match[2] || "";
+            if (/\bsrc\s*=/.test(attributes) || /application\/ld\+json/i.test(attributes) || !source.trim()) continue;
+            new vm.Script(source, { filename: "index-inline-" + index + ".js" });
+            checked += 1;
+          }
+          if (!checked) throw new Error("No inline JavaScript was checked");
+          process.stdout.write("Validated " + checked + " inline script block(s).\n");
+          NODE
