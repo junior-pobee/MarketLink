@@ -209,6 +209,79 @@ window.MarketLinkBackend = (() => {
       if (error) throw error;
       return data;
     },
+    async loadCollections(userId) {
+      const db = requireClient();
+      const [{ data: cart, error: cartError }, { data: wishlist, error: wishlistError }] = await Promise.all([
+        db.from("carts").select("id").eq("user_id", userId).single(),
+        db.from("wishlists").select("id").eq("user_id", userId).single()
+      ]);
+      if (cartError) throw cartError;
+      if (wishlistError) throw wishlistError;
+      const [{ data: cartItems, error: cartItemsError }, { data: savedItems, error: savedError }] = await Promise.all([
+        db.from("cart_items").select("product_id,quantity").eq("cart_id", cart.id),
+        db.from("wishlist_items").select("product_id").eq("wishlist_id", wishlist.id)
+      ]);
+      if (cartItemsError) throw cartItemsError;
+      if (savedError) throw savedError;
+      return {
+        cart: (cartItems || []).map(item => ({ productId: item.product_id, qty: item.quantity })),
+        wishlist: (savedItems || []).map(item => item.product_id)
+      };
+    },
+    async addCartItem(productId, quantity = 1) {
+      const db = requireClient();
+      const { data: authData, error: authError } = await db.auth.getUser();
+      if (authError || !authData.user) throw new Error("Sign in to use your cart.");
+      const { data: cart, error: cartError } = await db.from("carts").select("id").eq("user_id", authData.user.id).single();
+      if (cartError) throw cartError;
+      const { data: product, error: productError } = await db.from("products").select("stock_quantity,status").eq("id", productId).single();
+      if (productError) throw productError;
+      if (product.status !== "published" || product.stock_quantity < quantity) throw new Error("This product is not available in the requested quantity.");
+      const { data: existing, error: existingError } = await db.from("cart_items").select("id,quantity").eq("cart_id", cart.id).eq("product_id", productId).maybeSingle();
+      if (existingError) throw existingError;
+      const nextQuantity = (existing?.quantity || 0) + quantity;
+      if (nextQuantity > product.stock_quantity) throw new Error("Your cart quantity exceeds available stock.");
+      const result = existing
+        ? await db.from("cart_items").update({ quantity: nextQuantity }).eq("id", existing.id)
+        : await db.from("cart_items").insert({ cart_id: cart.id, product_id: productId, quantity: nextQuantity });
+      if (result.error) throw result.error;
+      return nextQuantity;
+    },
+    async setCartQuantity(productId, quantity) {
+      const db = requireClient();
+      const { data: authData, error: authError } = await db.auth.getUser();
+      if (authError || !authData.user) throw new Error("Sign in to update your cart.");
+      const { data: cart, error: cartError } = await db.from("carts").select("id").eq("user_id", authData.user.id).single();
+      if (cartError) throw cartError;
+      if (quantity > 0) {
+        const { data: product, error: productError } = await db.from("products").select("stock_quantity,status").eq("id", productId).single();
+        if (productError) throw productError;
+        if (product.status !== "published" || quantity > product.stock_quantity) throw new Error("The requested quantity is not available.");
+      }
+      const result = quantity > 0
+        ? await db.from("cart_items").update({ quantity }).eq("cart_id", cart.id).eq("product_id", productId)
+        : await db.from("cart_items").delete().eq("cart_id", cart.id).eq("product_id", productId);
+      if (result.error) throw result.error;
+    },
+    async toggleWishlist(productId, saved) {
+      const db = requireClient();
+      const { data: authData, error: authError } = await db.auth.getUser();
+      if (authError || !authData.user) throw new Error("Sign in to save products.");
+      const { data: wishlist, error: wishlistError } = await db.from("wishlists").select("id").eq("user_id", authData.user.id).single();
+      if (wishlistError) throw wishlistError;
+      const result = saved
+        ? await db.from("wishlist_items").insert({ wishlist_id: wishlist.id, product_id: productId })
+        : await db.from("wishlist_items").delete().eq("wishlist_id", wishlist.id).eq("product_id", productId);
+      if (result.error) throw result.error;
+    },
+    async deleteProduct(productId) {
+      const { error } = await requireClient().from("products").delete().eq("id", productId);
+      if (error) throw error;
+    },
+    async updateStock(productId, quantity) {
+      const { error } = await requireClient().from("products").update({ stock_quantity: quantity }).eq("id", productId);
+      if (error) throw error;
+    },
     async startConversation(otherUserId, productId, message) {
       const db = requireClient();
       const { data: authData, error: authError } = await db.auth.getUser();
