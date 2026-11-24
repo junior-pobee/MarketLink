@@ -42,6 +42,7 @@ window.MarketLinkBackend = (() => {
   async function mapProduct(row) {
     const media = Array.isArray(row.product_media) ? [...row.product_media].sort((a, b) => a.sort_order - b.sort_order) : [];
     const image = media.find(item => item.media_type === "image");
+    const video = media.find(item => item.media_type === "video");
     return {
       id: row.id,
       title: row.title,
@@ -62,6 +63,7 @@ window.MarketLinkBackend = (() => {
       createdAt: new Date(row.created_at).getTime(),
       imageId: image?.storage_path || null,
       imageUrl: image ? await signedMedia(image.storage_path) : "",
+      videoUrl: video ? await signedMedia(video.storage_path) : "",
       status: row.status,
       demo: false
     };
