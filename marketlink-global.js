@@ -221,7 +221,7 @@
     if (!target || document.getElementById("ml-global-admin")) return;
     const admin = document.createElement("section");
     admin.id = "ml-global-admin";
-    admin.innerHTML = `<h2>MarketLink CEO / Admin Console</h2><p>Publish platform-wide updates and moderate accounts.</p><h3>Pending seller subscriptions</h3><div id="ml-pending-subscriptions"></div><form id="ml-announcement-form"><input id="ml-announcement-title" maxlength="140" required placeholder="Announcement title"><textarea id="ml-announcement-body" maxlength="5000" required placeholder="Announcement message"></textarea><select id="ml-announcement-audience"><option value="all">All users</option><option value="buyers">Buyers</option><option value="sellers">Sellers</option></select><button class="ml-action" type="submit">Publish announcement</button></form><hr><form id="ml-moderation-form"><input id="ml-target-user" required placeholder="User account UUID"><select id="ml-moderation-action"><option value="suspend">Suspend account</option><option value="ban">Ban account</option><option value="reinstate">Reinstate account</option></select><input id="ml-moderation-reason" required maxlength="500" placeholder="Reason"><button class="ml-action" type="submit">Apply moderation action</button></form>`;
+    admin.innerHTML = `<h2>MarketLink CEO / Admin Console</h2><p>Publish platform-wide updates and moderate accounts.</p><h3>Pending seller subscriptions</h3><div id="ml-pending-subscriptions"></div><form id="ml-announcement-form"><input id="ml-announcement-title" maxlength="140" required placeholder="Announcement title"><textarea id="ml-announcement-body" maxlength="5000" required placeholder="Announcement message"></textarea><select id="ml-announcement-audience"><option value="all">All users</option><option value="buyers">Buyers</option><option value="sellers">Sellers</option></select><button class="ml-action" type="submit">Publish announcement</button></form><hr><form id="ml-verification-form"><h3>Seller verification</h3><input id="ml-storefront-id" required placeholder="Storefront UUID"><select id="ml-verification-value"><option value="true">Award verification badge</option><option value="false">Remove verification badge</option></select><button class="ml-action" type="submit">Update verification</button></form><hr><form id="ml-moderation-form"><input id="ml-target-user" required placeholder="User account UUID"><select id="ml-moderation-action"><option value="suspend">Suspend account</option><option value="ban">Ban account</option><option value="reinstate">Reinstate account</option></select><input id="ml-moderation-reason" required maxlength="500" placeholder="Reason"><button class="ml-action" type="submit">Apply moderation action</button></form>`;
     target.prepend(admin);
     const { data: pendingPlans, error: plansError } = await db.from("seller_plans")
       .select("id,seller_id,plan_code,monthly_fee,currency,category_count,created_at")
@@ -259,6 +259,16 @@
       if (publishError) return notify(publishError.message);
       event.target.reset();
       notify("Announcement sent to the selected users.");
+    });
+    admin.querySelector("#ml-verification-form").addEventListener("submit", async event => {
+      event.preventDefault();
+      const { error: verificationError } = await db.rpc("marketlink_set_storefront_verification", {
+        p_storefront_id: admin.querySelector("#ml-storefront-id").value.trim(),
+        p_verified: admin.querySelector("#ml-verification-value").value === "true"
+      });
+      if (verificationError) return notify(verificationError.message);
+      event.target.reset();
+      notify("Storefront verification updated.");
     });
     admin.querySelector("#ml-moderation-form").addEventListener("submit", async event => {
       event.preventDefault();
