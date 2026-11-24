@@ -3674,7 +3674,7 @@ function renderCart() {
 
 /* DELIVERY LOCATION + GOOGLE MAPS */
 
-const DROP = { lat: null, lng: null };
+const DROP = { lat: null, lng: null, weather: null };
 
 function mapEmbedURL(query, zoom = 16) {
   return `https://maps.google.com/maps?q=${encodeURIComponent(query)}&z=${zoom}&output=embed`;
@@ -3692,6 +3692,33 @@ function viewMapURL(drop) {
 
 function setDropStatus(message) {
   $("dropStatus").textContent = message;
+}
+
+async function loadDeliveryWeather(latitude, longitude) {
+  DROP.weather = null;
+  setDropStatus("Location pinned. Checking current weather conditions…");
+  try {
+    const endpoint = "https://api.open-meteo.com/v1/forecast?latitude=" + encodeURIComponent(latitude) + "&longitude=" + encodeURIComponent(longitude) + "&current=temperature_2m,precipitation,rain,showers,weather_code,wind_speed_10m&timezone=auto";
+    const response = await fetch(endpoint);
+    if (!response.ok) throw new Error("Weather service unavailable");
+    const payload = await response.json();
+    const current = payload.current;
+    const labels = {0:"Clear",1:"Mainly clear",2:"Partly cloudy",3:"Overcast",45:"Fog",48:"Depositing rime fog",51:"Light drizzle",53:"Drizzle",55:"Heavy drizzle",61:"Light rain",63:"Rain",65:"Heavy rain",71:"Light snow",73:"Snow",75:"Heavy snow",80:"Rain showers",81:"Rain showers",82:"Heavy rain showers",95:"Thunderstorm",96:"Thunderstorm with hail",99:"Severe thunderstorm"};
+    DROP.weather = {
+      temperature: Number(current.temperature_2m),
+      precipitation: Number(current.precipitation || 0),
+      rain: Number(current.rain || 0),
+      showers: Number(current.showers || 0),
+      windSpeed: Number(current.wind_speed_10m || 0),
+      code: Number(current.weather_code),
+      label: labels[Number(current.weather_code)] || "Conditions unavailable",
+      fetchedAt: new Date().toISOString()
+    };
+    const caution = DROP.weather.rain > 0 || DROP.weather.showers > 0 || DROP.weather.windSpeed >= 35;
+    setDropStatus(DROP.weather.label + " · " + DROP.weather.temperature + "°C · Wind " + DROP.weather.windSpeed + " km/h" + (caution ? " · Weather caution: delivery timing may need review." : " · No major weather alert detected."));
+  } catch (error) {
+    setDropStatus("Location pinned. Current weather could not be checked; delivery teams should confirm conditions.");
+  }
 }
 
 function updateDropMap() {
@@ -3714,8 +3741,9 @@ function useMyLocation() {
     DROP.lat = Number(position.coords.latitude.toFixed(6));
     DROP.lng = Number(position.coords.longitude.toFixed(6));
     $("dropMap").src = mapEmbedURL(`${DROP.lat},${DROP.lng}`);
-    setDropStatus(`Location pinned (accuracy about ${Math.round(position.coords.accuracy)} m). The rider will navigate straight to this point.`);
+    setDropStatus(`Location pinned (accuracy about ${Math.round(position.coords.accuracy)} m). Checking weather for this delivery point…`);
     if (!$("dropAddress").value.trim()) $("dropAddress").value = "Pinned GPS location";
+    loadDeliveryWeather(DROP.lat, DROP.lng);
   }, error => {
     const reason = error.code === 1 ? "Location permission was denied. Allow it in your browser, or type your address."
       : "Couldn't get your location. Type your address and tap “Find address on map”.";
@@ -3741,7 +3769,8 @@ function readDropoff() {
     address: $("dropAddress").value.trim(),
     notes: $("dropNotes").value.trim(),
     lat: DROP.lat,
-    lng: DROP.lng
+    lng: DROP.lng,
+    weather: DROP.weather
   };
 }
 
