@@ -2661,7 +2661,7 @@ iframe {
 
     <!-- CART -->
     <section class="page" id="page-cart">
-      <div class="page-heading"><div><div class="eyebrow">Ready when you are</div><h1>Your shopping cart.</h1><p>Review your items before placing a demo order.</p></div></div>
+      <div class="page-heading"><div><div class="eyebrow">Ready when you are</div><h1>Your shopping cart.</h1><p>Review your items and delivery details before confirming your order.</p></div></div>
       <div class="cart-layout">
         <div class="cart-items" id="cartItems"></div>
         <aside class="cart-summary">
@@ -2690,16 +2690,16 @@ iframe {
             <iframe class="map-frame" id="dropMap" title="Delivery location map" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=Accra%2C%20Ghana&z=11&output=embed"></iframe>
             <div class="map-status" id="dropStatus">Share your exact location so the delivery person can find you.</div>
           </div>
-          <button class="btn btn-primary" id="checkoutBtn">Place demo order →</button>
+          <button class="btn btn-primary" id="checkoutBtn">Place order — cash on delivery →</button>
           <button class="btn" data-page="marketplace">Continue shopping</button>
-          <p class="small muted" style="margin-top:12px">Checkout is temporarily unavailable while secure payment processing is being completed.</p>
+          <p class="small muted" style="margin-top:12px">Cash on delivery is currently supported. Online card and mobile-money payments are not enabled.</p>
         </aside>
       </div>
     </section>
 
     <!-- ORDERS -->
     <section class="page" id="page-orders">
-      <div class="page-heading"><div><div class="eyebrow">Your purchases</div><h1>Order history.</h1><p>Review your locally recorded marketplace orders.</p></div></div>
+      <div class="page-heading"><div><div class="eyebrow">Your purchases</div><h1>Order history.</h1><p>Review your cloud-synced marketplace orders.</p></div></div>
       <div id="ordersContainer"></div>
     </section>
 
@@ -2709,7 +2709,7 @@ iframe {
       <div class="stats-grid">
         <div class="stat-card"><div class="stat-icon">📦</div><div><span>Your listings</span><strong id="sellerListingsCount">0</strong></div></div>
         <div class="stat-card"><div class="stat-icon">🛒</div><div><span>Items sold</span><strong id="sellerSoldCount">0</strong></div></div>
-        <div class="stat-card"><div class="stat-icon">💰</div><div><span>Demo sales value</span><strong id="sellerSalesValue">GH₵0</strong></div></div>
+        <div class="stat-card"><div class="stat-icon">💰</div><div><span>Order value</span><strong id="sellerSalesValue">GH₵0</strong></div></div>
         <div class="stat-card"><div class="stat-icon">⚠️</div><div><span>Low-stock listings</span><strong id="sellerLowStock">0</strong></div></div>
       </div>
       <div class="dashboard-grid">
@@ -2757,7 +2757,7 @@ iframe {
 
     <!-- SELLER ORDERS -->
     <section class="page" id="page-sellerorders">
-      <div class="page-heading"><div><div class="eyebrow">Seller studio</div><h1>Sales & orders.</h1><p>Review demo orders that include products listed by your account.</p></div></div>
+      <div class="page-heading"><div><div class="eyebrow">Seller studio</div><h1>Sales & orders.</h1><p>Review real orders that include products listed by your account.</p></div></div>
       <div id="sellerOrdersContainer"></div>
     </section>
 
@@ -3766,13 +3766,35 @@ function dropoffMarkup(order) {
     </div>`;
 }
 
-function checkout() {
+async function checkout() {
   if (!ML.data.cart.length) return toast("Your cart is empty.", "error");
   if (!getUser()) {
     openAuth();
     return toast("Log in before continuing.", "error");
   }
-  toast("Secure checkout is being completed. Your synced cart is saved, but orders and payments are not enabled yet.", "error");
+  const dropoff = readDropoff();
+  if (!dropoff.phone || !dropoff.address) return toast("Enter your delivery phone number and address first.", "error");
+  const button = $("checkoutBtn");
+  button.disabled = true;
+  button.textContent = "Placing order…";
+  try {
+    const createdOrders = await MarketLinkBackend.placeOrder(dropoff);
+    const collections = await MarketLinkBackend.loadCollections(ML.currentUser);
+    ML.data.cart = collections.cart;
+    ML.data.wishlist = collections.wishlist;
+    ML.data.notifications = collections.notifications;
+    ML.data.orders = await MarketLinkBackend.loadOrders();
+    saveData();
+    renderAll();
+    const numbers = (createdOrders || []).map(order => order.order_number).join(", ");
+    toast("Order placed successfully: " + numbers + ". Pay cash on delivery.", "success");
+    showPage("orders");
+  } catch (error) {
+    toast(error.message || "We couldn't place your order. Please try again.", "error");
+  } finally {
+    button.textContent = "Place order — cash on delivery →";
+    button.disabled = !ML.data.cart.length;
+  }
 }
 
 /* SELLER INVENTORY */
@@ -3851,7 +3873,7 @@ function renderSellerOrders() {
   const orders = ML.data.orders.filter(order => order.items.some(item => item.sellerId === ML.currentUser));
 
   if (!orders.length) {
-    $("sellerOrdersContainer").innerHTML = `<div class="empty-state"><div class="empty-icon">📦</div><h3>No sales orders yet</h3><p>When demo orders include your products, they will appear here.</p><button class="btn btn-primary" data-page="inventory">Manage listings</button></div>`;
+    $("sellerOrdersContainer").innerHTML = `<div class="empty-state"><div class="empty-icon">📦</div><h3>No sales orders yet</h3><p>When buyers order your products, they will appear here.</p><button class="btn btn-primary" data-page="inventory">Manage listings</button></div>`;
     return;
   }
 
@@ -3859,7 +3881,7 @@ function renderSellerOrders() {
     const items = order.items.filter(item => item.sellerId === ML.currentUser);
     const total = items.reduce((sum, item) => sum + item.price * item.qty, 0);
     return `<tr><td><strong>${escapeHTML(order.orderNumber)}</strong><div class="small muted">${new Date(order.createdAt).toLocaleDateString()}</div></td><td>${escapeHTML(order.buyerName)}${order.dropoff?.phone ? `<div class="small muted"><a href="tel:${escapeHTML(order.dropoff.phone)}">${escapeHTML(order.dropoff.phone)}</a></div>` : ""}</td><td>${order.dropoff && (order.dropoff.address || order.dropoff.lat != null) ? `<div class="small">${escapeHTML(order.dropoff.address)}</div><a class="small" href="${directionsURL(order.dropoff)}" target="_blank" rel="noopener">📍 Get directions</a>` : `<span class="muted small">Not provided</span>`}</td><td>${items.reduce((sum, item) => sum + item.qty, 0)}</td><td>${money(total)}</td><td><span class="status pending">${escapeHTML(order.status)}</span></td><td><button class="btn" data-order-status="${escapeHTML(order.id)}">Update status</button></td></tr>`;
-  }).join("")}</tbody></table></div><p class="small muted" style="margin-top:12px">These are local demonstration orders, not verified customer transactions.</p>`;
+  }).join("")}</tbody></table></div><p class="small muted" style="margin-top:12px">Orders are stored in the MarketLink cloud. Payment is due on delivery.</p>`;
 }
 
 function editProduct(id) {
@@ -4792,6 +4814,7 @@ async function initMarketLink() {
         ML.data.sessions.userId = user.id;
         ML.data.products = await MarketLinkBackend.loadProducts();
         const collections = await MarketLinkBackend.loadCollections(user.id);
+        ML.data.orders = await MarketLinkBackend.loadOrders();
         ML.data.cart = collections.cart;
         ML.data.wishlist = collections.wishlist;
         ML.data.notifications = collections.notifications;
