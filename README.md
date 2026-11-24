@@ -248,7 +248,7 @@ The hosted project currently records these applied migrations:
 - `20261124214232_marketlink_security_and_realtime_hardening`
 - `20261124214439_marketlink_private_triggers_and_publication_guards`
 - `20261124214501_marketlink_signup_profile_metadata`
-- `202611242146xx_marketlink_product_media_owner_index`
+- `20261124214602_marketlink_product_media_owner_index`
 
 Keep migration source files under `supabase/migrations` before using a separate environment. The live project has been initialized directly and must not be reset to recreate it.
 
