@@ -243,6 +243,52 @@ window.MarketLinkBackend = (() => {
         }))
       };
     },
+    async loadOrders() {
+      const { data, error } = await requireClient().from("orders")
+        .select("*, order_items(*)")
+        .order("created_at", { ascending: false })
+        .limit(100);
+      if (error) throw error;
+      return (data || []).map(order => {
+        const drop = order.shipping_address || {};
+        return {
+          id: order.id,
+          orderNumber: order.order_number,
+          buyerName: drop.name || "MarketLink buyer",
+          createdAt: new Date(order.created_at).getTime(),
+          status: order.status,
+          paymentStatus: order.payment_status,
+          paymentMethod: order.payment_method,
+          total: Number(order.total),
+          currency: order.currency,
+          dropoff: {
+            phone: drop.phone || "",
+            address: drop.address || "",
+            notes: drop.notes || "",
+            lat: drop.latitude ?? null,
+            lng: drop.longitude ?? null
+          },
+          items: (order.order_items || []).map(item => ({
+            productId: item.product_id,
+            title: item.product_title,
+            price: Number(item.unit_price),
+            qty: Number(item.quantity),
+            sellerId: item.seller_id
+          }))
+        };
+      });
+    },
+    async placeOrder(dropoff) {
+      const { data, error } = await requireClient().rpc("marketlink_place_order", {
+        p_phone: dropoff.phone,
+        p_address: dropoff.address,
+        p_notes: dropoff.notes || "",
+        p_lat: dropoff.lat,
+        p_lng: dropoff.lng
+      });
+      if (error) throw error;
+      return data;
+    },
     async markNotificationsRead(userId) {
       const { error } = await requireClient().from("notifications").update({ read_at: new Date().toISOString() }).eq("user_id", userId).is("read_at", null);
       if (error) throw error;
