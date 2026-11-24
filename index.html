@@ -3533,7 +3533,7 @@ function openProduct(id) {
           <div class="small"><span class="muted">Condition:</span> ${escapeHTML(product.condition || "Not specified")}</div>
           <div class="small"><span class="muted">Location:</span> ${escapeHTML(product.location || "Ask seller")}</div>
           <div class="small"><span class="muted">Delivery:</span> ${escapeHTML(product.delivery || "Confirm with seller")}</div>
-          <div class="small"><span class="muted">Seller:</span> ${escapeHTML(sellerName)}</div>
+          <div class="small"><span class="muted">Seller:</span> ${escapeHTML(sellerName)} ${product.sellerVerified ? '<span class="pill available">✓ MarketLink verified</span>' : ""}</div>
         </div>
         <div class="detail-actions">
           ${available ? `<button class="btn btn-primary" data-product-action="cart" data-product-id="${escapeHTML(product.id)}">Add to cart →</button>` : `<button class="btn btn-primary" data-product-action="restock" data-product-id="${escapeHTML(product.id)}">Ask about restocking</button>`}
