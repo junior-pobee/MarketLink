@@ -1,4 +1,4 @@
-const CACHE_NAME = "market-link-v3";
+const CACHE_NAME = "market-link-v4";
 
 const APP_FILES = [
  "./",
