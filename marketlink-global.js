@@ -34,6 +34,7 @@
     <header><div><strong>MarketLink Messages</strong><div class="ml-muted" style="color:#d5e7dc">Buyer and seller inbox</div></div><button id="ml-close" aria-label="Close" style="background:transparent;border:0;color:white;font-size:24px">×</button></header>
     <div class="ml-body" id="ml-inbox">
       <div id="ml-plan-list"></div>
+      <details style="margin:10px 0"><summary>Find a seller</summary><div id="ml-seller-directory"></div></details>
       <h3 style="margin:12px 0 4px">Your conversations</h3>
       <div id="ml-conversations"></div>
       <details style="margin-top:12px"><summary>Start a conversation</summary><input id="ml-recipient" placeholder="Recipient account ID"><input id="ml-subject" placeholder="Subject"><textarea id="ml-first-message" placeholder="Write your first message"></textarea><button class="ml-action" id="ml-start">Start chat</button></details>
@@ -64,8 +65,32 @@
     if (error) throw error;
     el("ml-plan-list").innerHTML = '<h3 style="margin:0 0 8px">Seller subscriptions</h3>' + (data || []).map(plan => `<div class="ml-item"><strong>${escapeHtml(plan.plan_name)}</strong><div style="font-size:20px;font-weight:800">GH₵${Number(plan.monthly_fee).toFixed(2)} / month</div><div class="ml-muted">${plan.category_limit === 1 ? "One product category" : "Multiple product categories"}</div></div>`).join("");
   }
+  async function loadSellerDirectory() {
+    const { data, error } = await db.from("storefronts")
+      .select("owner_id,name,city,country_code")
+      .eq("status", "active")
+      .order("name")
+      .limit(100);
+    if (error) throw error;
+    const directory = el("ml-seller-directory");
+    directory.innerHTML = (data || []).map(store => `<button class="ml-item" data-seller="${store.owner_id}"><strong>${escapeHtml(store.name)}</strong><div class="ml-muted">${escapeHtml([store.city,store.country_code].filter(Boolean).join(", "))}</div></button>`).join("") || '<p class="ml-muted">No active storefronts are available yet.</p>';
+    directory.querySelectorAll("[data-seller]").forEach(button => button.addEventListener("click", async () => {
+      try {
+        const { data: conversationId, error: startError } = await db.rpc("marketlink_start_conversation", {
+          p_recipient_id: button.dataset.seller,
+          p_product_id: null,
+          p_subject: "Store enquiry",
+          p_message: "Hello, I would like to know more about your store."
+        });
+        if (startError) throw startError;
+        await loadInbox();
+        await openConversation(conversationId);
+      } catch (error) { notify(error.message || "Could not contact this seller."); }
+    }));
+  }
   async function loadInbox() {
     const user = await currentUser();
+    await loadSellerDirectory();
     if (!user) {
       el("ml-conversations").innerHTML = '<p class="ml-muted">Sign in to use buyer–seller messaging.</p>';
       return;
