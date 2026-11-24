@@ -123,7 +123,15 @@
     const { data, error } = await db.from("messages").select("id,sender_id,body,attachment_path,attachment_type,created_at,deleted_at").eq("conversation_id", state.activeConversation).order("created_at", { ascending: true }).limit(200);
     if (error) throw error;
     const user = await currentUser();
-    el("ml-messages").innerHTML = (data || []).map(message => `<div class="ml-message ${message.sender_id === user.id ? "mine" : ""}"><div>${message.deleted_at ? "<em>Message deleted</em>" : escapeHtml(message.body)}</div>${message.attachment_path && !message.deleted_at ? '<div class="ml-muted">Attachment: ' + escapeHtml(message.attachment_type || "file") + '</div>' : ""}<div class="ml-muted">${new Date(message.created_at).toLocaleString()}</div>${message.sender_id === user.id && !message.deleted_at ? '<button data-delete-message="' + message.id + '" style="border:0;background:transparent;color:#9b3333;font-size:11px">Delete for everyone</button>' : ""}</div>`).join("");
+    const rendered = await Promise.all((data || []).map(async message => {
+      let attachment = "";
+      if (message.attachment_path && !message.deleted_at) {
+        const { data: signed, error: signedError } = await db.storage.from("message-attachments").createSignedUrl(message.attachment_path, 3600);
+        if (!signedError && signed?.signedUrl) attachment = '<a href="' + escapeHtml(signed.signedUrl) + '" target="_blank" rel="noopener noreferrer">Open attachment</a>';
+      }
+      return `<div class="ml-message ${message.sender_id === user.id ? "mine" : ""}"><div>${message.deleted_at ? "<em>Message deleted</em>" : escapeHtml(message.body)}</div>${attachment ? '<div class="ml-muted">' + attachment + '</div>' : ""}<div class="ml-muted">${new Date(message.created_at).toLocaleString()}</div>${message.sender_id === user.id && !message.deleted_at ? '<button data-delete-message="' + message.id + '" style="border:0;background:transparent;color:#9b3333;font-size:11px">Delete for everyone</button>' : ""}</div>`;
+    }));
+    el("ml-messages").innerHTML = rendered.join("");
     el("ml-messages").querySelectorAll("[data-delete-message]").forEach(button => button.addEventListener("click", async () => {
       const { error: deleteError } = await db.from("messages").update({ body: "", deleted_at: new Date().toISOString() }).eq("id", button.dataset.deleteMessage).eq("sender_id", user.id);
       if (deleteError) notify(deleteError.message); else await loadMessages();
