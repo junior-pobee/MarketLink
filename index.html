@@ -3781,12 +3781,15 @@ function dropoffMarkup(order) {
   const hasPin = drop.lat != null && drop.lng != null;
   const query = hasPin ? `${drop.lat},${drop.lng}` : drop.address + ", Ghana";
   const dir = directionsURL(drop);
+  const weather = drop.weather;
+  const weatherMarkup = weather?.label ? `<div class="small muted">Delivery weather: ${escapeHTML(weather.label)} · ${escapeHTML(weather.temperature)}°C · Wind ${escapeHTML(weather.windSpeed)} km/h · Rain ${escapeHTML(weather.rain)} mm</div>` : "";
   const share = `https://wa.me/?text=${encodeURIComponent(`Delivery ${order.orderNumber} for ${order.buyerName}\nPhone: ${drop.phone}\nAddress: ${drop.address}${drop.notes ? "\nNote: " + drop.notes : ""}\nDirections: ${dir}`)}`;
   return `
     <div class="delivery-box" style="margin-top:18px">
       <h4>Deliver to</h4>
       <div class="small"><strong>${escapeHTML(order.buyerName)}</strong> · <a href="tel:${escapeHTML(drop.phone)}">${escapeHTML(drop.phone)}</a></div>
       <div class="small">${escapeHTML(drop.address)}${drop.notes ? `<br><span class="muted">${escapeHTML(drop.notes)}</span>` : ""}</div>
+      ${weatherMarkup}
       <iframe class="map-frame" title="Delivery map" loading="lazy" src="${mapEmbedURL(query)}"></iframe>
       <div class="map-actions">
         <a class="btn btn-primary" href="${dir}" target="_blank" rel="noopener">Get directions</a>
@@ -3922,7 +3925,10 @@ async function scanProductBarcode() {
   if (!("BarcodeDetector" in window)) return toast("Barcode scanning is not supported by this browser. Enter the barcode manually.", "error");
   if (!navigator.mediaDevices?.getUserMedia) return toast("Camera access is unavailable. Enter the barcode manually.", "error");
   try {
-    const detector = new BarcodeDetector({ formats: ["ean_13","ean_8","upc_a","upc_e","code_128","code_39","qr_code"] });
+    const supportedFormats = await BarcodeDetector.getSupportedFormats();
+    const formats = ["ean_13","ean_8","upc_a","upc_e","code_128","code_39","qr_code"].filter(format => supportedFormats.includes(format));
+    if (!formats.length) throw new Error("This camera browser does not support common product barcode formats.");
+    const detector = new BarcodeDetector({ formats });
     productBarcodeStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } }, audio: false });
     const layer = document.createElement("div");
     layer.id = "ml-barcode-scanner";
