@@ -2539,7 +2539,7 @@ iframe {
         <button class="btn btn-accent" data-page="addproduct">Start selling <svg><use href="#i-arrow"/></svg></button>
       </div>
       <div class="sidebar-foot">
-        <span>Market Link · Prototype</span>
+        <span>MarketLink · Cloud-connected marketplace</span>
         <span>v1.0</span>
       </div>
     </div>
@@ -2670,7 +2670,7 @@ iframe {
           <div class="summary-row"><span>Delivery estimate</span><strong id="cartDelivery">GH₵0.00</strong></div>
           <div class="summary-row"><span>Tax</span><strong id="cartTax">GH₵0.00</strong></div>
           <div class="summary-row summary-total"><span>Total</span><strong id="cartTotal">GH₵0.00</strong></div>
-          <p class="small muted" style="margin:12px 0">Prices are shown in Ghana cedis for this local prototype.</p>
+          <p class="small muted" style="margin:12px 0">Prices currently use Ghana cedis. Country-specific currencies will be enabled as regional support is added.</p>
 
           <div class="delivery-box" id="deliveryBox">
             <h4>Delivery location</h4>
@@ -2692,7 +2692,7 @@ iframe {
           </div>
           <button class="btn btn-primary" id="checkoutBtn">Place demo order →</button>
           <button class="btn" data-page="marketplace">Continue shopping</button>
-          <p class="small muted" style="margin-top:12px">No payment is collected by this prototype.</p>
+          <p class="small muted" style="margin-top:12px">Checkout is temporarily unavailable while secure payment processing is being completed.</p>
         </aside>
       </div>
     </section>
@@ -2834,14 +2834,14 @@ iframe {
           <div class="form-footer"><button class="btn btn-primary" id="savePreferences">Save preferences</button></div>
         </div>
         <div class="settings-card">
-          <h3>Account & data</h3><p>This prototype saves information in your browser. It does not provide secure server-side authentication or sync data across devices.</p>
+          <h3>Account & data</h3><p>MarketLink uses cloud authentication and account data. Some display preferences and cached media may remain on this device.</p>
           <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" id="exportDataBtn">Export marketplace data</button><button class="btn" id="logoutBtn">Log out</button><button class="btn btn-danger" id="clearDataBtn">Clear local marketplace data</button></div>
         </div>
       </div>
     </section>
 
     <footer style="padding:0 30px 28px;color:var(--muted);font-size:10px">
-      Market Link · Your World. One Marketplace. · Browser-based prototype
+      MarketLink · Your World. One Marketplace. · Cloud-connected marketplace
     </footer>
   </main>
 </div>
@@ -2897,7 +2897,7 @@ iframe {
         <h1>Discover more.<br><em>Sell with purpose.</em></h1>
         <p>Find products you love, showcase what you sell, and connect with people through one thoughtful marketplace.</p>
       </div>
-      <div class="auth-story-bottom">A marketplace prototype built for discovery and connection.</div>
+      <div class="auth-story-bottom">A cloud-connected marketplace built for discovery and connection.</div>
     </section>
 
     <section class="auth-form-side">
@@ -2924,7 +2924,7 @@ iframe {
         </div>
         <button class="btn btn-accent auth-submit" id="authSubmit" type="submit">Create my account →</button>
       </form>
-      <div class="auth-disclaimer">🔒 This prototype stores account information in this browser. It is not secure production authentication and does not sync accounts across devices. Do not reuse an important password here.</div>
+      <div class="auth-disclaimer">🔒 Your account is authenticated through MarketLink's cloud service. Keep your password private and use a unique password for this account.</div>
     </section>
   </div>
 </div>
@@ -4010,7 +4010,7 @@ function showOrderDetails(id) {
     <div class="summary-row"><span>Tax estimate</span><strong>${money(order.tax)}</strong></div>
     <div class="summary-row summary-total"><span>Total</span><strong>${money(order.total)}</strong></div>
     ${dropoffMarkup(order)}
-    <p class="small muted" style="margin-top:15px">Demo order only. No payment was processed and delivery is not tracked by this prototype.</p>
+    <p class="small muted" style="margin-top:15px">Checkout is currently unavailable. No payment has been collected and no order has been placed.</p>
   `;
   $("genericModal").classList.add("open");
 }
@@ -4394,7 +4394,7 @@ function showConfirm(title, message, onConfirm) {
 function exportData() {
   const payload = {
     exportedAt: new Date().toISOString(),
-    note: "Market Link browser prototype export. Binary images and attachments are not included.",
+    note: "MarketLink data export. Binary images and attachments are not included.",
     data: ML.data
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
