@@ -3399,8 +3399,9 @@ function selectCategory(category) {
 
 function getVisibleProducts() {
   let products = ML.data.products.filter(product => {
-    const categoryMatch = ML.selectedCategory === "All products" ||
-      product.category === ML.selectedCategory;
+    const visibilityMatch = !MarketLinkBackend.configured || product.status === "published";
+    const categoryMatch = visibilityMatch && (ML.selectedCategory === "All products" ||
+      product.category === ML.selectedCategory);
     const term = ML.searchTerm.toLowerCase();
     const searchMatch = !term || [
       product.title, product.category, product.description, product.brand,
@@ -3477,7 +3478,8 @@ function renderMarketplace() {
 
 function renderCategoryProducts() {
   const products = ML.data.products.filter(product =>
-    ML.selectedCategory === "All products" || product.category === ML.selectedCategory
+    (!MarketLinkBackend.configured || product.status === "published") &&
+    (ML.selectedCategory === "All products" || product.category === ML.selectedCategory)
   );
   $("categoryProductGrid").innerHTML = productGridMarkup(products);
 }
@@ -3547,58 +3549,73 @@ function cartProduct(id) {
   return ML.data.products.find(product => product.id === id);
 }
 
-function addToCart(id) {
+async function addToCart(id) {
   const product = cartProduct(id);
   if (!product) return toast("Product not found.", "error");
-  if (product.stock < 1) return toast("This product is out of stock. Contact the seller to enquire about restocking.", "error");
+  if (product.status !== "published" && MarketLinkBackend.configured) return toast("This listing is not available for purchase yet.", "error");
+  if (product.stock < 1) return toast("This product is out of stock.", "error");
 
-  const existing = ML.data.cart.find(item => item.productId === id);
-  if (existing) {
-    if (existing.qty >= product.stock) return toast("Your cart already contains all currently available stock.", "error");
-    existing.qty += 1;
-  } else {
-    ML.data.cart.push({ productId: id, qty: 1 });
+  try {
+    if (MarketLinkBackend.configured) await MarketLinkBackend.addCartItem(id, 1);
+    const existing = ML.data.cart.find(item => item.productId === id);
+    if (existing) {
+      if (existing.qty >= product.stock) return toast("Your cart already contains all currently available stock.", "error");
+      existing.qty += 1;
+    } else {
+      ML.data.cart.push({ productId: id, qty: 1 });
+    }
+    saveData();
+    updateBadges();
+    renderCart();
+    toast("Added to your synced cart.", "success");
+  } catch (error) {
+    console.error(error);
+    toast(error.message || "This item could not be added to your cart.", "error");
   }
-
-  saveData();
-  updateBadges();
-  renderCart();
-  toast("Added to your cart.", "success");
 }
 
-function changeCartQty(id, delta) {
+async function changeCartQty(id, delta) {
   const item = ML.data.cart.find(cartItem => cartItem.productId === id);
   const product = cartProduct(id);
   if (!item || !product) return;
 
   const next = item.qty + delta;
-  if (next <= 0) {
-    ML.data.cart = ML.data.cart.filter(cartItem => cartItem.productId !== id);
-  } else if (next <= product.stock) {
-    item.qty = next;
-  } else {
-    toast("Quantity cannot exceed available stock.", "error");
-  }
+  if (next > product.stock) return toast("Quantity cannot exceed available stock.", "error");
 
-  saveData();
-  renderAll();
+  try {
+    if (MarketLinkBackend.configured) await MarketLinkBackend.setCartQuantity(id, next);
+    if (next <= 0) ML.data.cart = ML.data.cart.filter(cartItem => cartItem.productId !== id);
+    else item.qty = next;
+    saveData();
+    renderAll();
+  } catch (error) {
+    console.error(error);
+    toast(error.message || "Your cart could not be updated.", "error");
+  }
 }
 
-function toggleWishlist(id) {
-  if (ML.data.wishlist.includes(id)) {
-    ML.data.wishlist = ML.data.wishlist.filter(item => item !== id);
-    toast("Removed from wishlist.");
-  } else {
-    ML.data.wishlist.push(id);
-    toast("Saved to your wishlist.", "success");
+async function toggleWishlist(id) {
+  const saved = ML.data.wishlist.includes(id);
+  try {
+    if (MarketLinkBackend.configured) await MarketLinkBackend.toggleWishlist(id, !saved);
+    if (saved) {
+      ML.data.wishlist = ML.data.wishlist.filter(item => item !== id);
+      toast("Removed from your synced wishlist.");
+    } else {
+      ML.data.wishlist.push(id);
+      toast("Saved to your synced wishlist.", "success");
+    }
+    saveData();
+    updateBadges();
+    renderHomeProducts();
+    renderMarketplace();
+    renderWishlist();
+    renderCategoryProducts();
+    if (ML.currentProduct === id) openProduct(id);
+  } catch (error) {
+    console.error(error);
+    toast(error.message || "Your wishlist could not be updated.", "error");
   }
-  saveData();
-  updateBadges();
-  renderHomeProducts();
-  renderMarketplace();
-  renderWishlist();
-  renderCategoryProducts();
-  if (ML.currentProduct === id) openProduct(id);
 }
 
 function cartTotals() {
@@ -3740,63 +3757,11 @@ function dropoffMarkup(order) {
 
 function checkout() {
   if (!ML.data.cart.length) return toast("Your cart is empty.", "error");
-  const user = getUser();
-  if (!user) {
+  if (!getUser()) {
     openAuth();
-    return toast("Create an account or log in before placing an order.", "error");
+    return toast("Log in before continuing.", "error");
   }
-
-  const unavailable = ML.data.cart.find(item => {
-    const product = cartProduct(item.productId);
-    return !product || product.stock < item.qty;
-  });
-
-  if (unavailable) {
-    renderCart();
-    return toast("One or more products no longer have enough stock. Review your cart.", "error");
-  }
-
-  const dropoff = readDropoff();
-  if (!dropoff.phone || (!dropoff.address && dropoff.lat == null)) {
-    $("deliveryBox").scrollIntoView({ behavior: "smooth", block: "center" });
-    return toast("Add your phone number and delivery location so the rider can find you.", "error");
-  }
-
-  const totals = cartTotals();
-  const order = {
-    id: uid("order"),
-    orderNumber: "ML-" + Date.now().toString().slice(-8),
-    buyerId: user.id,
-    buyerName: user.name,
-    items: ML.data.cart.map(item => {
-      const product = cartProduct(item.productId);
-      product.stock -= item.qty;
-      return {
-        productId: product.id,
-        title: product.title,
-        price: product.price,
-        qty: item.qty,
-        sellerId: product.sellerId || null,
-        sellerName: product.sellerName || "Marketplace seller"
-      };
-    }),
-    subtotal: totals.subtotal,
-    delivery: totals.delivery,
-    tax: totals.tax,
-    total: totals.total,
-    status: "Pending confirmation",
-    dropoff,
-    createdAt: Date.now(),
-    demo: true
-  };
-
-  ML.data.orders.unshift(order);
-  ML.data.cart = [];
-  notify("Demo order created", "Order " + order.orderNumber + " has been recorded locally. No payment was processed.", "📦");
-  saveData();
-  renderAll();
-  goPage("orders");
-  toast("Demo order created. No payment was taken.", "success");
+  toast("Secure checkout is being completed. Your synced cart is saved, but orders and payments are not enabled yet.", "error");
 }
 
 /* SELLER INVENTORY */
@@ -3839,7 +3804,7 @@ function renderInventory() {
         </tr>`).join("")}
       </tbody>
     </table></div>
-    <p class="small muted" style="margin-top:12px">Stock changes are saved in this browser. Listings are not published to a shared server.</p>`;
+    <p class="small muted" style="margin-top:12px">Inventory changes are synchronized with your MarketLink cloud account. Draft listings remain private until approved for publication.</p>`;
 }
 
 function renderSellerDashboard() {
@@ -3972,28 +3937,40 @@ function deleteProduct(id) {
   const product = ML.data.products.find(item => item.id === id);
   if (!product || product.sellerId !== ML.currentUser) return toast("You can delete only your own listings.", "error");
 
-  showConfirm("Delete this listing?", `This will remove “${product.title}” from this browser's marketplace.`, async () => {
-    ML.data.products = ML.data.products.filter(item => item.id !== id);
-    ML.data.cart = ML.data.cart.filter(item => item.productId !== id);
-    ML.data.wishlist = ML.data.wishlist.filter(item => item !== id);
-    if (product.imageId) await deleteBlob(product.imageId);
-    saveData();
-    renderAll();
-    toast("Listing deleted.");
+  showConfirm("Delete this listing?", "This will permanently remove your listing and its media from MarketLink.", async () => {
+    try {
+      if (MarketLinkBackend.configured) await MarketLinkBackend.deleteProduct(id);
+      ML.data.products = ML.data.products.filter(item => item.id !== id);
+      ML.data.cart = ML.data.cart.filter(item => item.productId !== id);
+      ML.data.wishlist = ML.data.wishlist.filter(item => item !== id);
+      saveData();
+      renderAll();
+      toast("Listing deleted.");
+    } catch (error) {
+      console.error(error);
+      toast(error.message || "The listing could not be deleted.", "error");
+    }
   });
 }
 
-function updateStock(id, value) {
+async function updateStock(id, value) {
   const product = ML.data.products.find(item => item.id === id);
   if (!product || product.sellerId !== ML.currentUser) return;
 
   const stock = Number(value);
   if (!Number.isInteger(stock) || stock < 0) return toast("Enter a valid non-negative stock quantity.", "error");
-  product.stock = stock;
-  saveData();
-  renderSellerDashboard();
-  renderMarketplace();
-  toast("Stock updated.", "success");
+  try {
+    if (MarketLinkBackend.configured) await MarketLinkBackend.updateStock(id, stock);
+    product.stock = stock;
+    saveData();
+    renderSellerDashboard();
+    renderMarketplace();
+    toast("Cloud inventory updated.", "success");
+  } catch (error) {
+    console.error(error);
+    toast(error.message || "Inventory could not be updated.", "error");
+    renderInventory();
+  }
 }
 
 /* ORDERS */
@@ -4003,7 +3980,7 @@ function renderOrders() {
   const orders = ML.data.orders.filter(order => order.buyerId === user?.id);
 
   if (!orders.length) {
-    $("ordersContainer").innerHTML = `<div class="empty-state"><div class="empty-icon">🧾</div><h3>Your order history is empty</h3><p>When you place a demo order, it will appear here.</p><button class="btn btn-primary" data-page="marketplace">Start exploring</button></div>`;
+    $("ordersContainer").innerHTML = `<div class="empty-state"><div class="empty-icon">🧾</div><h3>Your order history is empty</h3><p>Your order history will appear here when secure checkout is enabled.</p><button class="btn btn-primary" data-page="marketplace">Start exploring</button></div>`;
     $("homeRecentOrders").innerHTML = `<div class="empty-state" style="padding:25px"><p>No orders yet.</p><button class="btn" data-page="marketplace">Browse products</button></div>`;
     return;
   }
@@ -4344,7 +4321,7 @@ function renderNotifications() {
   const unread = notes.filter(note => !note.read).length;
 
   if (!notes.length) {
-    $("notificationList").innerHTML = `<div class="empty-state"><div class="empty-icon">🔔</div><h3>All quiet for now</h3><p>Updates from this local prototype will appear here.</p></div>`;
+    $("notificationList").innerHTML = `<div class="empty-state"><div class="empty-icon">🔔</div><h3>All quiet for now</h3><p>Updates from your MarketLink account will appear here.</p></div>`;
     return;
   }
 
@@ -4747,6 +4724,9 @@ async function initMarketLink() {
         ML.currentUser = user.id;
         ML.data.sessions.userId = user.id;
         ML.data.products = await MarketLinkBackend.loadProducts();
+        const collections = await MarketLinkBackend.loadCollections(user.id);
+        ML.data.cart = collections.cart;
+        ML.data.wishlist = collections.wishlist;
       } else {
         ML.data.users = [];
         ML.data.sessions.userId = null;
