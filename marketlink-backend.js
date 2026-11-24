@@ -269,7 +269,8 @@ window.MarketLinkBackend = (() => {
             address: drop.address || "",
             notes: drop.notes || "",
             lat: drop.latitude ?? null,
-            lng: drop.longitude ?? null
+            lng: drop.longitude ?? null,
+            weather: drop.weather || null
           },
           items: (order.order_items || []).map(item => ({
             productId: item.product_id,
