@@ -4776,6 +4776,15 @@ async function initMarketLink() {
       const session = await MarketLinkBackend.getSession();
       if (session?.user) {
         const user = await MarketLinkBackend.loadProfile(session.user);
+        if (user.accountStatus !== "active") {
+          await MarketLinkBackend.signOut();
+          ML.data.users = [];
+          ML.data.sessions.userId = null;
+          ML.currentUser = null;
+          toast("This account is currently " + user.accountStatus + ". Contact MarketLink support.", "error");
+          openAuth();
+          return;
+        }
         ML.backendUser = user;
         ML.data.users = [user];
         ML.currentUser = user.id;
