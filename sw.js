@@ -1,11 +1,13 @@
-const CACHE_NAME = "market-link-v2";
+const CACHE_NAME = "market-link-v3";
 
 const APP_FILES = [
  "./",
  "./index.html",
  "./manifest.json",
  "./icon-192.png",
- "./icon-512.png"
+ "./icon-512.png",
+ "./marketlink-config.js",
+ "./marketlink-backend.js"
 ];
 
 // Install the service worker and cache essential app files.
