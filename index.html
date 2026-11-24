@@ -4546,10 +4546,19 @@ document.addEventListener("click", event => {
 
   const removeCart = event.target.closest("[data-remove-cart]");
   if (removeCart) {
-    ML.data.cart = ML.data.cart.filter(item => item.productId !== removeCart.dataset.removeCart);
-    saveData();
-    renderAll();
-    toast("Item removed from your cart.");
+    const productId = removeCart.dataset.removeCart;
+    (async () => {
+      try {
+        if (MarketLinkBackend.configured) await MarketLinkBackend.setCartQuantity(productId, 0);
+        ML.data.cart = ML.data.cart.filter(item => item.productId !== productId);
+        saveData();
+        renderAll();
+        toast("Item removed from your synced cart.");
+      } catch (error) {
+        console.error(error);
+        toast(error.message || "The item could not be removed.", "error");
+      }
+    })();
     return;
   }
 
@@ -4593,6 +4602,11 @@ document.addEventListener("click", event => {
   if (closeButton) {
     closeModal(closeButton.dataset.closeModal);
   }
+});
+
+document.addEventListener("change", event => {
+  const stockInput = event.target.closest("[data-stock-input]");
+  if (stockInput) updateStock(stockInput.dataset.stockInput, stockInput.value);
 });
 
 /* SEARCH & INPUTS */
