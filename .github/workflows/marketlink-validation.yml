@@ -21,11 +21,20 @@ jobs:
         run: |
           node --check marketlink-config.js
           node --check marketlink-backend.js
+          node --check sw.js
           node <<'NODE'
           const fs = require("node:fs");
           const vm = require("node:vm");
           const html = fs.readFileSync("index.html", "utf8");
           const scripts = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)];
+          const required = ["https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2", "./marketlink-config.js", "./marketlink-backend.js"];
+          for (const asset of required) {
+            if (!html.includes(asset)) throw new Error("Missing cloud integration asset: " + asset);
+          }
+          const worker = fs.readFileSync("sw.js", "utf8");
+          for (const asset of ["./marketlink-config.js", "./marketlink-backend.js"]) {
+            if (!worker.includes(asset)) throw new Error("Service worker does not cache " + asset);
+          }
           let checked = 0;
           for (const [index, match] of scripts.entries()) {
             const attributes = match[1] || "";

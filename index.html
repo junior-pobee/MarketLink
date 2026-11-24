@@ -2716,7 +2716,7 @@ iframe {
         <div class="panel"><h3>Listing inventory</h3><p class="panel-subtitle">Your current stock distribution.</p><div class="chart" id="sellerStockChart"></div></div>
         <div class="panel"><h3>Seller quick actions</h3><p class="panel-subtitle">Keep your shop up to date.</p><div style="display:grid;gap:10px;margin-top:18px"><button class="btn" data-page="addproduct">＋ Add a new product</button><button class="btn" data-page="inventory">▤ Manage inventory</button><button class="btn" data-page="sellerorders">▣ Review sales orders</button><button class="btn" data-page="profile">◎ Update seller profile</button></div></div>
       </div>
-      <div class="section"><div class="section-heading"><div><h2>Your recent listings</h2><p>Products created in this browser.</p></div><button class="text-btn" data-page="inventory">Manage all →</button></div><div id="sellerRecentListings"></div></div>
+      <div class="section"><div class="section-heading"><div><h2>Your recent listings</h2><p>Your latest listings.</p></div><button class="text-btn" data-page="inventory">Manage all →</button></div><div id="sellerRecentListings"></div></div>
     </section>
 
     <!-- INVENTORY -->
@@ -2813,7 +2813,7 @@ iframe {
 
     <!-- NOTIFICATIONS -->
     <section class="page" id="page-notifications">
-      <div class="page-heading"><div><div class="eyebrow">Stay informed</div><h1>Your notifications.</h1><p>See activity recorded in this browser.</p></div><button class="btn" id="markNotificationsRead">Mark all as read</button></div>
+      <div class="page-heading"><div><div class="eyebrow">Stay informed</div><h1>Your notifications.</h1><p>See your latest marketplace activity.</p></div><button class="btn" id="markNotificationsRead">Mark all as read</button></div>
       <div id="notificationList" class="notification-list"></div>
     </section>
 
@@ -2945,6 +2945,9 @@ iframe {
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2"></script>
+<script src="./marketlink-config.js"></script>
+<script src="./marketlink-backend.js"></script>
 <script>
 "use strict";
 
