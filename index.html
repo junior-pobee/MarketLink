@@ -2741,6 +2741,7 @@ iframe {
             <div class="field"><label for="productStock">Stock quantity *</label><input id="productStock" type="number" min="0" step="1" required value="1"></div>
             <div class="field"><label for="productCondition">Condition</label><select id="productCondition"><option>New</option><option>Like new</option><option>Used - good</option><option>Used - fair</option><option>Digital product</option><option>Service</option></select></div>
             <div class="field"><label for="productSku">SKU / item code</label><input id="productSku" maxlength="50" placeholder="Optional inventory code"></div>
+            <div class="field"><label for="productBarcode">Barcode</label><div style="display:flex;gap:8px"><input id="productBarcode" maxlength="80" placeholder="Scan or enter barcode"><button type="button" class="btn" id="scanProductBarcode">Scan</button></div></div>
             <div class="field"><label for="productBrandLocation">Seller location</label><input id="productBrandLocation" maxlength="100" placeholder="e.g. Accra, Ghana"></div>
             <div class="field"><label for="productDelivery">Delivery information</label><input id="productDelivery" maxlength="160" placeholder="e.g. Delivery arranged with seller"></div>
             <div class="field full"><label for="productDescription">Product description *</label><textarea id="productDescription" required maxlength="4000" placeholder="Describe the product, features, condition, size, materials, and other useful details."></textarea></div>
@@ -3913,6 +3914,56 @@ function renderSellerOrders() {
   }).join("")}</tbody></table></div><p class="small muted" style="margin-top:12px">Orders are stored in the MarketLink cloud. Payment is due on delivery.</p>`;
 }
 
+
+let productBarcodeStream = null;
+let productBarcodeFrame = null;
+
+async function scanProductBarcode() {
+  if (!("BarcodeDetector" in window)) return toast("Barcode scanning is not supported by this browser. Enter the barcode manually.", "error");
+  if (!navigator.mediaDevices?.getUserMedia) return toast("Camera access is unavailable. Enter the barcode manually.", "error");
+  try {
+    const detector = new BarcodeDetector({ formats: ["ean_13","ean_8","upc_a","upc_e","code_128","code_39","qr_code"] });
+    productBarcodeStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } }, audio: false });
+    const layer = document.createElement("div");
+    layer.id = "ml-barcode-scanner";
+    layer.style.cssText = "position:fixed;inset:0;z-index:10020;background:#06130dF2;display:grid;place-items:center;padding:18px";
+    layer.innerHTML = '<div style="width:min(520px,100%);background:#fff;color:#14241b;border-radius:18px;padding:16px"><h3>Scan product barcode</h3><video id="ml-barcode-video" playsinline autoplay muted style="width:100%;border-radius:12px;background:#111"></video><p id="ml-barcode-status">Point the rear camera at a product barcode.</p><button type="button" id="ml-barcode-cancel" class="btn">Cancel</button></div>';
+    document.body.append(layer);
+    const video = layer.querySelector("#ml-barcode-video");
+    video.srcObject = productBarcodeStream;
+    await video.play();
+    const close = () => {
+      if (productBarcodeFrame) cancelAnimationFrame(productBarcodeFrame);
+      productBarcodeFrame = null;
+      productBarcodeStream?.getTracks().forEach(track => track.stop());
+      productBarcodeStream = null;
+      layer.remove();
+    };
+    layer.querySelector("#ml-barcode-cancel").addEventListener("click", close);
+    const scan = async () => {
+      if (!layer.isConnected) return;
+      try {
+        const codes = await detector.detect(video);
+        if (codes.length && codes[0].rawValue) {
+          $("productBarcode").value = codes[0].rawValue;
+          close();
+          toast("Barcode captured.", "success");
+          return;
+        }
+      } catch (error) {
+        layer.querySelector("#ml-barcode-status").textContent = "Unable to read this barcode. Try adjusting the camera position.";
+      }
+      productBarcodeFrame = requestAnimationFrame(scan);
+    };
+    scan();
+  } catch (error) {
+    productBarcodeStream?.getTracks().forEach(track => track.stop());
+    productBarcodeStream = null;
+    document.getElementById("ml-barcode-scanner")?.remove();
+    toast(error.message || "Camera could not be opened. Enter the barcode manually.", "error");
+  }
+}
+
 function editProduct(id) {
   const product = ML.data.products.find(item => item.id === id);
   if (!product || product.sellerId !== ML.currentUser) return toast("You can edit only listings belonging to your account.", "error");
@@ -3927,6 +3978,7 @@ function editProduct(id) {
   $("productStock").value = product.stock;
   $("productCondition").value = product.condition || "New";
   $("productSku").value = product.sku || "";
+  $("productBarcode").value = product.barcode || "";
   $("productBrandLocation").value = product.location || "";
   $("productDelivery").value = product.delivery || "";
   $("productDescription").value = product.description || "";
@@ -3975,6 +4027,7 @@ async function handleProductSubmit(event) {
       stock,
       condition: $("productCondition").value,
       sku: $("productSku").value.trim(),
+      barcode: $("productBarcode").value.trim(),
       city: $("productBrandLocation").value.trim() || user.location || "",
       description,
       currency: ML.data.preferences.currency || "GHS"
@@ -4710,6 +4763,7 @@ $("profileForm").addEventListener("submit", saveProfile);
 $("saveShopDetails").addEventListener("click", saveShopDetails);
 $("authForm").addEventListener("submit", handleAuth);
 $("checkoutBtn").addEventListener("click", checkout);
+$("scanProductBarcode").addEventListener("click", scanProductBarcode);
 setupDelivery();
 $("logoutBtn").addEventListener("click", logout);
 $("exportDataBtn").addEventListener("click", exportData);
