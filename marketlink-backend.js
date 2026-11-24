@@ -284,7 +284,8 @@ window.MarketLinkBackend = (() => {
         p_address: dropoff.address,
         p_notes: dropoff.notes || "",
         p_lat: dropoff.lat,
-        p_lng: dropoff.lng
+        p_lng: dropoff.lng,
+        p_weather: dropoff.weather || {}
       });
       if (error) throw error;
       return data;
