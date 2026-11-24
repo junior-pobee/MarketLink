@@ -61,6 +61,7 @@ window.MarketLinkBackend = (() => {
       emoji: "",
       sellerId: row.seller_id,
       sellerName: row.storefronts?.name || "Marketplace seller",
+      sellerVerified: Boolean(row.storefronts?.verified_at),
       whatsapp: row.storefronts?.whatsapp || "",
       createdAt: new Date(row.created_at).getTime(),
       imageId: image?.storage_path || null,
@@ -131,7 +132,7 @@ window.MarketLinkBackend = (() => {
     },
     async loadProducts() {
       const { data, error } = await requireClient().from("products")
-        .select("*, categories(name), storefronts(name,whatsapp), product_media(storage_path,media_type,sort_order)")
+        .select("*, categories(name), storefronts(name,whatsapp,verified_at), product_media(storage_path,media_type,sort_order)")
         .order("created_at", { ascending: false })
         .limit(100);
       if (error) throw error;
@@ -194,7 +195,7 @@ window.MarketLinkBackend = (() => {
         if (mediaError) throw mediaError;
       }
       const { data: complete, error: readError } = await db.from("products")
-        .select("*, categories(name), storefronts(name,whatsapp), product_media(storage_path,media_type,sort_order)")
+        .select("*, categories(name), storefronts(name,whatsapp,verified_at), product_media(storage_path,media_type,sort_order)")
         .eq("id", product.id).single();
       if (readError) throw readError;
       return mapProduct(complete);
