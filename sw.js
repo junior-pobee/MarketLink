@@ -7,7 +7,8 @@ const APP_FILES = [
  "./icon-192.png",
  "./icon-512.png",
  "./marketlink-config.js",
- "./marketlink-backend.js"
+ "./marketlink-backend.js",
+ "./marketlink-global.js"
 ];
 
 // Install the service worker and cache essential app files.
