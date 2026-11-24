@@ -201,3 +201,54 @@ GOOD IDEAS CREATE OPPORTUNITIES.
 <br/><sub>Stay Stoic. Stay Becoming.</sub>
 
 </div>
+
+
+## Supabase cloud foundation
+
+MarketLink now has a dedicated Supabase project in the Pobee Foundations organization.
+
+- Project reference: `zltkeauxnfufbmzhxfkg`
+- Region: `eu-west-1`
+- API URL: `https://zltkeauxnfufbmzhxfkg.supabase.co`
+- Browser SDK: `@supabase/supabase-js@2.119.2`
+- Client configuration: `marketlink-config.js`
+- Backend adapter: `marketlink-backend.js`
+
+The browser configuration contains only the Supabase publishable key. Never place a Supabase service-role key or secret key in this repository or in browser code.
+
+### Cloud capabilities connected
+
+- Supabase email/password authentication and persistent sessions.
+- User profiles stored in PostgreSQL.
+- Shared product listings with owner-only draft access.
+- Seller storefront records.
+- Product image/video uploads in private Storage.
+- Cloud-synchronized carts and wishlists.
+- Cloud inventory updates and product deletion.
+- Realtime product refresh and user notification refresh.
+- Row Level Security enabled on every public table.
+
+### Publication and commerce safeguards
+
+New product listings and storefronts are created as drafts. Browser clients cannot publish listings, activate storefronts, or award verification badges. Those actions require trusted server-side approval. Seller plan records and order records are not writable by browser clients.
+
+Checkout is deliberately disabled until a supported payment provider, server-side payment verification, shipping rules, refund handling, and order-creation workflow are implemented and tested. Do not mark an order paid based on a browser response.
+
+MarketLink must enforce a published marketplace safety policy and review listings before public release. Restricted, illegal, unsafe, or deceptive listings must not be approved.
+
+### Supabase Auth setup before public testing
+
+Set the Supabase Auth Site URL to the production MarketLink origin and add the production origin plus the approved preview origin to the Redirect URLs allow-list. Signup uses the current application origin for email confirmation redirects.
+
+### Database migrations
+
+The hosted project currently records these applied migrations:
+
+- `20261124214217_marketlink_core_marketplace_schema`
+- `20261124214232_marketlink_security_and_realtime_hardening`
+- `20261124214439_marketlink_private_triggers_and_publication_guards`
+- `20261124214501_marketlink_signup_profile_metadata`
+- `202611242146xx_marketlink_product_media_owner_index`
+
+Keep migration source files under `supabase/migrations` before using a separate environment. The live project has been initialized directly and must not be reset to recreate it.
+
