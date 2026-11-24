@@ -2966,6 +2966,7 @@ const ML = {
   editingId: null,
   currentProduct: null,
   currentUser: null,
+  backendUser: null,
   data: null,
   db: null
 };
@@ -3028,6 +3029,7 @@ function initials(name = "Market Link") {
 }
 
 function getUser() {
+  if (ML.backendUser && ML.backendUser.id === ML.currentUser) return ML.backendUser;
   return ML.data.users.find(user => user.id === ML.currentUser) || null;
 }
 
@@ -3254,8 +3256,8 @@ function setAuthMode(mode) {
   $("authEmail").required = true;
   $("authTitle").textContent = register ? "Create your account." : "Welcome back.";
   $("authSubtitle").textContent = register
-    ? "Choose how you want to use the marketplace."
-    : "Log in to the account saved in this browser.";
+    ? "Create a secure account that works across your devices."
+    : "Log in securely to your MarketLink account.";
   $("authSubmit").textContent = register ? "Create my account →" : "Log in →";
   $("authPassword").autocomplete = register ? "new-password" : "current-password";
 }
@@ -3271,83 +3273,71 @@ function showLoadingScreen(done, ms = 5000) {
   }, ms);
 }
 
-function handleAuth(event) {
+async function handleAuth(event) {
   event.preventDefault();
   const email = $("authEmail").value.trim().toLowerCase();
   const password = $("authPassword").value;
   const name = $("authName").value.trim();
   const whatsApp = $("authWhatsApp").value.trim();
 
-  if (!email || password.length < 6) {
-    toast("Enter a valid email and a password with at least 6 characters.", "error");
-    return;
-  }
+  if (!email || password.length < 8) return toast("Enter a valid email and a password with at least 8 characters.", "error");
+  if (!MarketLinkBackend.configured) return toast("Cloud authentication is unavailable. Refresh and try again.", "error");
+  if (ML.authMode === "register" && !name) return toast("Please enter your name.", "error");
 
-  if (ML.authMode === "register") {
-    if (!name) return toast("Please enter your name.", "error");
-    if (ML.data.users.some(user => user.email.toLowerCase() === email)) {
-      toast("An account with that email already exists in this browser. Try logging in.", "error");
-      setAuthMode("login");
-      return;
+  try {
+    let authData;
+    if (ML.authMode === "register") {
+      authData = await MarketLinkBackend.signUp({ email, password, name, accountType: ML.roleChoice });
+      if (!authData.session || !authData.user) {
+        toast("Check your email to confirm your address, then log in.", "success");
+        setAuthMode("login");
+        return;
+      }
+      await MarketLinkBackend.updateProfile(authData.user.id, {
+        display_name: name,
+        whatsapp: normalizePhone(whatsApp),
+        account_type: ML.roleChoice
+      });
+    } else {
+      authData = await MarketLinkBackend.signIn(email, password);
     }
 
-    const user = {
-      id: uid("user"),
-      name,
-      email,
-      passwordDemo: password,
-      role: ML.roleChoice,
-      whatsapp: normalizePhone(whatsApp),
-      phone: "",
-      location: "",
-      website: "",
-      bio: "",
-      shopName: "",
-      shopType: "Individual seller",
-      photoId: null,
-      createdAt: Date.now()
-    };
-
-    ML.data.users.push(user);
+    const user = await MarketLinkBackend.loadProfile(authData.user);
+    ML.backendUser = user;
+    ML.data.users = [user];
     ML.currentUser = user.id;
     ML.data.sessions.userId = user.id;
-    notify("Welcome to Market Link", "Your local account has been created.", "👋");
+    ML.data.products = await MarketLinkBackend.loadProducts();
     saveData();
     closeAuth();
     showLoadingScreen(() => {
       renderAll();
-      toast("Welcome, " + name + "!", "success");
+      toast("Welcome, " + user.name + "!", "success");
     });
-    return;
+  } catch (error) {
+    console.error(error);
+    toast(error.message || "We couldn't complete authentication. Check your details and try again.", "error");
   }
-
-  const user = ML.data.users.find(item =>
-    item.email.toLowerCase() === email && item.passwordDemo === password
-  );
-
-  if (!user) {
-    toast("Those details do not match an account saved in this browser.", "error");
-    return;
-  }
-
-  ML.currentUser = user.id;
-  ML.data.sessions.userId = user.id;
-  saveData();
-  closeAuth();
-  showLoadingScreen(() => {
-    renderAll();
-    toast("Welcome back, " + user.name + "!", "success");
-  });
 }
 
-function logout() {
+async function logout() {
+  try {
+    if (MarketLinkBackend.configured) await MarketLinkBackend.signOut();
+  } catch (error) {
+    console.error(error);
+    toast("The server could not complete sign out. Please try again.", "error");
+    return;
+  }
   ML.currentUser = null;
+  ML.backendUser = null;
   ML.data.sessions.userId = null;
+  ML.data.users = [];
+  ML.data.products = [];
   saveData();
   renderAll();
   openAuth();
   setAuthMode("login");
-  toast("You have logged out of this browser session.");
+  toast("You have logged out.");
 }
 
 /* NAVIGATION */
@@ -3946,56 +3936,36 @@ async function handleProductSubmit(event) {
     return toast("Check the product name, description, price and stock quantity.", "error");
   }
 
-  let imageId = null;
-  if (ML.pendingImage) {
-    try {
-      imageId = await storeBlob(ML.pendingImage, ML.pendingImage.name);
-    } catch (error) {
-      console.error(error);
-      toast("The image could not be saved because browser storage is unavailable. Try another file or free up device storage.", "error");
-      return;
-    }
-  }
-
+  if (!MarketLinkBackend.configured) return toast("Cloud product services are unavailable.", "error");
   const old = ML.editingId ? ML.data.products.find(item => item.id === ML.editingId) : null;
 
-  const product = {
-    id: old?.id || uid("product"),
-    title,
-    category: $("productCategory").value,
-    brand: $("productBrand").value.trim(),
-    price,
-    oldPrice: Number($("productOldPrice").value) || 0,
-    stock,
-    condition: $("productCondition").value,
-    sku: $("productSku").value.trim(),
-    location: $("productBrandLocation").value.trim() || user.location || "",
-    delivery: $("productDelivery").value.trim(),
-    description,
-    emoji: "",
-    sellerId: user.id,
-    sellerName: user.shopName || user.name,
-    whatsapp: user.whatsapp || "",
-    createdAt: old?.createdAt || Date.now(),
-    imageId: imageId || old?.imageId || null,
-    imageUrl: imageId ? URL.createObjectURL(ML.pendingImage) : old?.imageUrl || "",
-    demo: false
-  };
+  try {
+    const product = await MarketLinkBackend.saveProduct({
+      title,
+      category: $("productCategory").value,
+      brand: $("productBrand").value.trim(),
+      price,
+      stock,
+      condition: $("productCondition").value,
+      sku: $("productSku").value.trim(),
+      city: $("productBrandLocation").value.trim() || user.location || "",
+      description,
+      currency: ML.data.preferences.currency || "GHS"
+    }, ML.pendingImage, old?.id);
 
-  if (old) {
-    ML.data.products = ML.data.products.map(item => item.id === old.id ? product : item);
-    toast("Your listing has been updated.", "success");
-  } else {
-    ML.data.products.unshift(product);
-    notify("Listing created", title + " was added to this browser's marketplace.", "📦");
-    toast("Your listing has been created.", "success");
+    if (old) ML.data.products = ML.data.products.map(item => item.id === old.id ? product : item);
+    else ML.data.products.unshift(product);
+
+    ML.pendingImage = null;
+    saveData();
+    resetProductForm();
+    renderAll();
+    goPage("inventory");
+    toast("Listing saved as a draft. Publication will be enabled after the seller plan is activated.", "success");
+  } catch (error) {
+    console.error(error);
+    toast(error.message || "The listing could not be saved. Check your connection and try again.", "error");
   }
-
-  ML.pendingImage = null;
-  saveData();
-  resetProductForm();
-  renderAll();
-  goPage("inventory");
 }
 
 function deleteProduct(id) {
@@ -4134,39 +4104,65 @@ async function handleProfilePhoto(file) {
   }
 }
 
-function saveProfile(event) {
+async function saveProfile(event) {
   event.preventDefault();
   const user = getUser();
   if (!user) return openAuth();
 
   const email = $("profileEmail").value.trim().toLowerCase();
-  if (email && ML.data.users.some(other => other.id !== user.id && other.email.toLowerCase() === email)) {
-    return toast("Another local account already uses that email.", "error");
+  if (email && email !== user.email) {
+    $("profileEmail").value = user.email;
+    return toast("Email changes require a separate account verification step.", "error");
   }
 
-  user.name = $("profileName").value.trim();
-  user.email = email;
-  user.phone = $("profilePhone").value.trim();
-  user.whatsapp = normalizePhone($("profileWhatsApp").value);
-  user.location = $("profileLocation").value.trim();
-  user.website = $("profileWebsite").value.trim();
-  user.bio = $("profileBio").value.trim();
-  user.shopName = $("profileShopName").value.trim();
-  user.shopType = $("profileShopType").value;
+  const values = {
+    display_name: $("profileName").value.trim(),
+    phone: $("profilePhone").value.trim(),
+    whatsapp: normalizePhone($("profileWhatsApp").value),
+    city: $("profileLocation").value.trim(),
+    website: $("profileWebsite").value.trim(),
+    bio: $("profileBio").value.trim()
+  };
 
-  saveData();
-  renderAll();
-  toast("Your profile has been saved.", "success");
+  try {
+    await MarketLinkBackend.updateProfile(user.id, values);
+    Object.assign(user, {
+      name: values.display_name,
+      phone: values.phone,
+      whatsapp: values.whatsapp,
+      location: values.city,
+      website: values.website,
+      bio: values.bio
+    });
+    saveData();
+    renderAll();
+    toast("Your cloud profile has been updated.", "success");
+  } catch (error) {
+    console.error(error);
+    toast(error.message || "Your profile could not be saved.", "error");
+  }
 }
 
-function saveShopDetails() {
+async function saveShopDetails() {
   const user = getUser();
   if (!user) return openAuth();
-  user.shopName = $("profileShopName").value.trim();
-  user.shopType = $("profileShopType").value;
-  saveData();
-  renderAll();
-  toast("Seller details saved.", "success");
+  const name = $("profileShopName").value.trim();
+  if (!name) return toast("Enter a storefront name first.", "error");
+  try {
+    await MarketLinkBackend.saveStorefront({
+      name,
+      description: user.bio || "",
+      city: user.location || "",
+      whatsapp: user.whatsapp || ""
+    });
+    user.shopName = name;
+    saveData();
+    renderAll();
+    toast("Your storefront details have been saved as a draft.", "success");
+  } catch (error) {
+    console.error(error);
+    toast(error.message || "The storefront could not be saved.", "error");
+  }
 }
 
 async function uploadAttachments(fileList) {
@@ -4727,27 +4723,48 @@ $("sortProducts").value = "featured";
 
 async function initMarketLink() {
   ML.data = loadData();
-  ML.currentUser = ML.data.sessions?.userId || null;
+  ML.currentUser = null;
+  ML.backendUser = null;
 
   try {
     ML.db = await openMediaDB();
     await hydrateImages();
   } catch (error) {
     console.warn("File storage is unavailable:", error);
-    toast("Browser file storage is unavailable. Some image and attachment features may not work.", "error");
   }
 
-  // Start with all categories visible and restore the saved display preference.
   ML.selectedCategory = "All products";
   $("sortProducts").value = ML.data.preferences.defaultSort || "featured";
   setupMessaging();
-  renderAll();
 
-  const validSession = ML.currentUser && getUser();
-  if (!validSession) {
+  if (MarketLinkBackend.configured) {
+    try {
+      const session = await MarketLinkBackend.getSession();
+      if (session?.user) {
+        const user = await MarketLinkBackend.loadProfile(session.user);
+        ML.backendUser = user;
+        ML.data.users = [user];
+        ML.currentUser = user.id;
+        ML.data.sessions.userId = user.id;
+        ML.data.products = await MarketLinkBackend.loadProducts();
+      } else {
+        ML.data.users = [];
+        ML.data.sessions.userId = null;
+        ML.data.products = [];
+      }
+    } catch (error) {
+      console.error(error);
+      ML.data.users = [];
+      ML.data.sessions.userId = null;
+      ML.currentUser = null;
+      toast("MarketLink cloud services could not be reached. Check your connection and reload.", "error");
+    }
+  }
+
+  renderAll();
+  if (!ML.currentUser || !getUser()) {
     ML.currentUser = null;
-    ML.data.sessions.userId = null;
-    saveData();
+    ML.backendUser = null;
     openAuth();
   } else {
     closeAuth();
