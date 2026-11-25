@@ -52,6 +52,7 @@ window.MarketLinkBackend = (() => {
       price: Number(row.price),
       oldPrice: 0,
       stock: Number(row.stock_quantity || 0),
+      lowStockThreshold: Number(row.low_stock_threshold ?? 5),
       condition: row.condition || "new",
       sku: row.sku || "",
       barcode: row.barcode || "",
@@ -368,6 +369,10 @@ window.MarketLinkBackend = (() => {
     },
     async updateStock(productId, quantity) {
       const { error } = await requireClient().from("products").update({ stock_quantity: quantity }).eq("id", productId);
+      if (error) throw error;
+    },
+    async updateStockThreshold(productId, threshold) {
+      const { error } = await requireClient().from("products").update({ low_stock_threshold: threshold }).eq("id", productId);
       if (error) throw error;
     },
     async startConversation(otherUserId, productId, message) {
