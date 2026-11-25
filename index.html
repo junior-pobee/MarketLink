@@ -3845,10 +3845,11 @@ function renderInventory() {
   const products = myProducts().filter(product => {
     const textMatch = !search || (product.title + " " + product.category + " " + product.sku).toLowerCase().includes(search);
     const stock = Number(product.stock);
+    const threshold = Number(product.lowStockThreshold ?? 5);
     const stockMatch = filter === "all" ||
-      (filter === "available" && stock > 0) ||
+      (filter === "available" && stock > threshold) ||
       (filter === "out" && stock === 0) ||
-      (filter === "low" && stock > 0 && stock <= 5);
+      (filter === "low" && stock > 0 && stock <= threshold);
     return textMatch && stockMatch;
   });
 
@@ -3859,13 +3860,14 @@ function renderInventory() {
 
   $("inventoryTable").innerHTML = `
     <div class="table-wrap"><table>
-      <thead><tr><th>Product</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead>
+      <thead><tr><th>Product</th><th>Price</th><th>Stock</th><th>Alert at</th><th>Status</th><th>Actions</th></tr></thead>
       <tbody>${products.map(product => `
         <tr>
           <td><div class="table-product"><div class="table-product-image">${product.imageUrl ? `<img src="${escapeHTML(product.imageUrl)}" alt="">` : categoryGlyph(product.category, "category-fallback")}</div><div><strong>${escapeHTML(product.title)}</strong><span class="muted small">${escapeHTML(product.category)}</span></div></div></td>
           <td><strong>${money(product.price)}</strong></td>
           <td><input aria-label="Stock quantity" type="number" min="0" step="1" value="${Number(product.stock)}" data-stock-input="${escapeHTML(product.id)}" style="width:75px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text)"></td>
-          <td><span class="status ${product.stock > 0 ? "done" : "cancelled"}">${product.stock > 0 ? (product.stock <= 5 ? "Low stock" : "Available") : "Out of stock"}</span></td>
+          <td><input aria-label="Low stock threshold" type="number" min="0" step="1" value="${Number(product.lowStockThreshold ?? 5)}" data-stock-threshold="${escapeHTML(product.id)}" style="width:75px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text)"></td>
+          <td><span class="status ${product.stock > 0 ? "done" : "cancelled"}">${product.stock > 0 ? (product.stock <= Number(product.lowStockThreshold ?? 5) ? "Low stock" : "Available") : "Out of stock"}</span></td>
           <td><div style="display:flex;gap:6px"><button class="icon-btn" data-edit-product="${escapeHTML(product.id)}" title="Edit"><svg><use href="#i-edit"/></svg></button><button class="icon-btn" data-delete-product="${escapeHTML(product.id)}" title="Delete"><svg><use href="#i-trash"/></svg></button></div></td>
         </tr>`).join("")}
       </tbody>
@@ -3882,11 +3884,11 @@ function renderSellerDashboard() {
   $("sellerListingsCount").textContent = products.length;
   $("sellerSoldCount").textContent = sold;
   $("sellerSalesValue").textContent = money(sales);
-  $("sellerLowStock").textContent = products.filter(product => product.stock <= 5).length;
+  $("sellerLowStock").textContent = products.filter(product => product.stock <= Number(product.lowStockThreshold ?? 5)).length;
 
   const stockGroups = [
-    { label: "In stock", count: products.filter(product => product.stock > 5).length },
-    { label: "Low stock", count: products.filter(product => product.stock > 0 && product.stock <= 5).length },
+    { label: "In stock", count: products.filter(product => product.stock > Number(product.lowStockThreshold ?? 5)).length },
+    { label: "Low stock", count: products.filter(product => product.stock > 0 && product.stock <= Number(product.lowStockThreshold ?? 5)).length },
     { label: "Out", count: products.filter(product => product.stock === 0).length }
   ];
   const max = Math.max(1, ...stockGroups.map(group => group.count));
@@ -4090,6 +4092,25 @@ async function updateStock(id, value) {
   } catch (error) {
     console.error(error);
     toast(error.message || "Inventory could not be updated.", "error");
+    renderInventory();
+  }
+}
+
+async function updateStockThreshold(id, value) {
+  const product = ML.data.products.find(item => item.id === id);
+  if (!product || product.sellerId !== ML.currentUser) return;
+  const threshold = Number(value);
+  if (!Number.isInteger(threshold) || threshold < 0) return toast("Enter a valid non-negative threshold.", "error");
+  try {
+    if (MarketLinkBackend.configured) await MarketLinkBackend.updateStockThreshold(id, threshold);
+    product.lowStockThreshold = threshold;
+    saveData();
+    renderInventory();
+    renderSellerDashboard();
+    toast("Stock alert threshold saved.", "success");
+  } catch (error) {
+    console.error(error);
+    toast(error.message || "Threshold could not be updated.", "error");
     renderInventory();
   }
 }
@@ -4728,6 +4749,8 @@ document.addEventListener("click", event => {
 document.addEventListener("change", event => {
   const stockInput = event.target.closest("[data-stock-input]");
   if (stockInput) updateStock(stockInput.dataset.stockInput, stockInput.value);
+  const thresholdInput = event.target.closest("[data-stock-threshold]");
+  if (thresholdInput) updateStockThreshold(thresholdInput.dataset.stockThreshold, thresholdInput.value);
 });
 
 /* SEARCH & INPUTS */
