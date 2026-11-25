@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.marketlink_stock_alert_trigger() FROM PUBLIC, anon, authenticated;
