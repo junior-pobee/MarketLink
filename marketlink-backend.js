@@ -28,7 +28,8 @@ window.MarketLinkBackend = (() => {
       shopName: "",
       shopType: "Individual seller",
       photoUrl: "",
-      photoId: profile?.avatar_path || ""
+      photoId: profile?.avatar_path || "",
+      accountStatus: profile?.account_status || "active"
     };
   }
 
@@ -53,12 +54,14 @@ window.MarketLinkBackend = (() => {
       stock: Number(row.stock_quantity || 0),
       condition: row.condition || "new",
       sku: row.sku || "",
+      barcode: row.barcode || "",
       location: [row.city, row.country_code].filter(Boolean).join(", "),
       delivery: "",
       description: row.description || "",
       emoji: "",
       sellerId: row.seller_id,
       sellerName: row.storefronts?.name || "Marketplace seller",
+      sellerVerified: Boolean(row.storefronts?.verified_at),
       whatsapp: row.storefronts?.whatsapp || "",
       createdAt: new Date(row.created_at).getTime(),
       imageId: image?.storage_path || null,
@@ -92,6 +95,7 @@ window.MarketLinkBackend = (() => {
         });
         if (profileError) throw profileError;
       }
+      if (!data.session) throw new Error("Account was created, but instant sign-in is not active. Ask the platform administrator to check the Supabase email confirmation setting.");
       return data;
     },
     async signIn(email, password) {
@@ -128,7 +132,7 @@ window.MarketLinkBackend = (() => {
     },
     async loadProducts() {
       const { data, error } = await requireClient().from("products")
-        .select("*, categories(name), storefronts(name,whatsapp), product_media(storage_path,media_type,sort_order)")
+        .select("*, categories(name), storefronts(name,whatsapp,verified_at), product_media(storage_path,media_type,sort_order)")
         .order("created_at", { ascending: false })
         .limit(100);
       if (error) throw error;
@@ -154,6 +158,7 @@ window.MarketLinkBackend = (() => {
         description: input.description,
         brand: input.brand || null,
         sku: input.sku || null,
+        barcode: input.barcode || null,
         condition: input.condition || "new",
         price: input.price,
         currency: input.currency || "GHS",
@@ -190,7 +195,7 @@ window.MarketLinkBackend = (() => {
         if (mediaError) throw mediaError;
       }
       const { data: complete, error: readError } = await db.from("products")
-        .select("*, categories(name), storefronts(name,whatsapp), product_media(storage_path,media_type,sort_order)")
+        .select("*, categories(name), storefronts(name,whatsapp,verified_at), product_media(storage_path,media_type,sort_order)")
         .eq("id", product.id).single();
       if (readError) throw readError;
       return mapProduct(complete);
@@ -240,6 +245,54 @@ window.MarketLinkBackend = (() => {
           createdAt: new Date(note.created_at).getTime()
         }))
       };
+    },
+    async loadOrders() {
+      const { data, error } = await requireClient().from("orders")
+        .select("*, order_items(*)")
+        .order("created_at", { ascending: false })
+        .limit(100);
+      if (error) throw error;
+      return (data || []).map(order => {
+        const drop = order.shipping_address || {};
+        return {
+          id: order.id,
+          orderNumber: order.order_number,
+          buyerName: drop.name || "MarketLink buyer",
+          createdAt: new Date(order.created_at).getTime(),
+          status: order.status,
+          paymentStatus: order.payment_status,
+          paymentMethod: order.payment_method,
+          total: Number(order.total),
+          currency: order.currency,
+          dropoff: {
+            phone: drop.phone || "",
+            address: drop.address || "",
+            notes: drop.notes || "",
+            lat: drop.latitude ?? null,
+            lng: drop.longitude ?? null,
+            weather: drop.weather || null
+          },
+          items: (order.order_items || []).map(item => ({
+            productId: item.product_id,
+            title: item.product_title,
+            price: Number(item.unit_price),
+            qty: Number(item.quantity),
+            sellerId: item.seller_id
+          }))
+        };
+      });
+    },
+    async placeOrder(dropoff) {
+      const { data, error } = await requireClient().rpc("marketlink_place_order", {
+        p_phone: dropoff.phone,
+        p_address: dropoff.address,
+        p_notes: dropoff.notes || "",
+        p_lat: dropoff.lat,
+        p_lng: dropoff.lng,
+        p_weather: dropoff.weather || {}
+      });
+      if (error) throw error;
+      return data;
     },
     async markNotificationsRead(userId) {
       const { error } = await requireClient().from("notifications").update({ read_at: new Date().toISOString() }).eq("user_id", userId).is("read_at", null);
@@ -321,24 +374,14 @@ window.MarketLinkBackend = (() => {
       const db = requireClient();
       const { data: authData, error: authError } = await db.auth.getUser();
       if (authError || !authData.user) throw new Error("Sign in to contact a seller.");
-      const { data: conversation, error } = await db.from("conversations").insert({
-        created_by: authData.user.id,
-        product_id: productId || null,
-        subject: "Product enquiry"
-      }).select().single();
-      if (error) throw error;
-      const { error: memberError } = await db.from("conversation_members").insert([
-        { conversation_id: conversation.id, user_id: authData.user.id },
-        { conversation_id: conversation.id, user_id: otherUserId }
-      ]);
-      if (memberError) throw memberError;
-      const { error: messageError } = await db.from("messages").insert({
-        conversation_id: conversation.id,
-        sender_id: authData.user.id,
-        body: message
+      const { data: conversationId, error } = await db.rpc("marketlink_start_conversation", {
+        p_recipient_id: otherUserId,
+        p_product_id: productId || null,
+        p_subject: "Product enquiry",
+        p_message: message
       });
-      if (messageError) throw messageError;
-      return conversation;
+      if (error) throw error;
+      return { id: conversationId };
     }
   };
 })();
